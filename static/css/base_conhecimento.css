@@ -1,0 +1,131 @@
+/* base_conhecimento.css */
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* --- BUSCA (Quadrada e Alinhada) --- */
+.search-container {
+    margin-bottom: 30px;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    padding: 0 20px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 25px;
+    padding: 0 15px;
+    transition: border-color 0.2s ease;
+}
+
+
+
+.search-wrapper:focus-within {
+    border-color: #E95C13;
+    outline: none;
+}
+
+.search-icon {
+    color: #A9A9AC;
+    margin-right: 10px;
+}
+
+.search-input {
+    all: unset;
+    width: 100%;
+    height: 45px;
+    font-size: 15px;
+    color: #333;
+}
+
+/* --- LAYOUT DE COLUNAS --- */
+.content {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.sidebar {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex-grow: 1;
+    background: #fff;
+    padding: 30px;
+    border: 1px solid #dee2e6; /* BORDAS QUADRADAS */
+    min-height: 450px;
+}
+
+/* --- MENUS ACORDEÃO (QUADRADOS) --- */
+.module-group {
+    margin-bottom: -1px; /* Sobrepõe as bordas para não parecer dobrada */
+    border: 1px solid #dee2e6;
+    background: #fff;
+}
+
+.module-card {
+    list-style: none;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    transition: background 0.2s;
+}
+
+.module-card::-webkit-details-marker {
+    display: none; /* Remove a setinha padrão do navegador */
+}
+
+.module-card:hover {
+    background-color: #fff4ee;
+}
+
+/* A setinha (arrow) */
+.arrow::before {
+    content: '▶';
+    font-size: 10px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+/* Rotaciona a setinha quando o menu abre */
+details[open] .arrow::before {
+    transform: rotate(90deg);
+}
+
+/* --- LISTA DE ARTIGOS (QUANDO ABERTO) --- */
+.module-list {
+    display: flex;
+    flex-direction: column;
+    background-color: #fcfcfc;
+    border-top: 1px solid #dee2e6;
+}
+
+.module-list a {
+    padding: 12px 25px;
+    color: #555;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f1f1;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.module-list a:hover {
+    background-color: #fff4ee; /* Tom leve de laranja */
+    color: #E95C13;
+    padding-left: 30px; /* Efeito de deslize ao passar o mouse */
+}
+
+.module-list a:last-child {
+    border-bottom: none;
+}

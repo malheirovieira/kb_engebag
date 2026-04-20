@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/base_conhecimento.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="search-container">
+        <div class="search-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-search search-icon" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+            </svg>
+            <input class="search-input" placeholder="Busque a sua pergunta ou palavra chave aqui">
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="sidebar">
+            <div class="modules">
+                <details class="module-group">
+                    <summary class="module-card"> RM <span class="arrow"></span> </summary>
+                    <div class="module-list">
+                        <a href="#">Como acessar o RM</a>
+                        <a href="#">Dúvidas Frequentes</a>
+                    </div>
+                </details>
+
+                <details class="module-group">
+                    <summary class="module-card"> WINDOWS <span class="arrow"></span> </summary>
+                    <div class="module-list">
+                        <a href="#">Configurações de Rede</a>
+                    </div>
+                </details>
+                </div>
+        </div>
+
+        <div class="main-content">
+            <h2>Bem-vindo</h2>
+            <p>Selecione um módulo à esquerda para visualizar os artigos.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

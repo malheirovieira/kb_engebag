@@ -1,0 +1,102 @@
+/* --- HEADER SEARCH (EXCLUSIVO DA HOME) --- */
+.header__search {
+    background-color: #E95C13;
+    padding: 60px 0;
+    color: white;
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.search-container {
+    margin-top: 1.5rem;
+}
+
+/* Wrapper da busca na Home - Layout Centralizado e Arredondado */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border-radius: 30px;
+    border: 1px solid #ced4da;
+    width: 30%;
+    min-width: 380px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.search-wrapper:focus-within {
+    border-color: #E95C13;
+    outline: none;
+}
+
+.search-icon {
+    color: #A9A9AC;
+    min-width: 16px;
+    margin-right: 10px;
+}
+
+.search-input {
+    width: 300px; 
+    border: none;
+    background: transparent;
+    padding: 12px 0;
+    font-size: 15px;
+    color: #333;
+    outline: none;
+    font-family: inherit;
+}
+
+.search-input::placeholder {
+    color: #6c757d;
+}
+
+/* --- CARDS SECTION --- */
+.cards-section {
+    padding: 55px 20px;
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    max-width: 55%;
+    margin: 0 auto;
+}
+
+.card-link {
+    flex: 1;
+    color: #333;
+}
+
+.main-card {
+    border: none;
+    border-radius: 0px;
+    background: #fff;
+    box-shadow: 0 3px 2px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    height: 15vh;
+    width: 98%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.main-card h3 {
+    font-weight: bold;
+}
+
+.main-card:hover {
+    box-shadow: 0 5px 5px rgba(0,0,0,0.20);
+    transform: translateY(-1px);
+}
+
+.bi-ticket-perforated, .bi-journal-text {
+    width: 20px;
+    height: 20px;
+}
