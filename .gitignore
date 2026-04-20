@@ -1,0 +1,15 @@
+# Ignorar pastas de cache do Python
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignorar o banco de dados local
+db.sqlite3
+
+# Ignorar pastas de ambiente virtual
+venv/
+.venv/
+env/
+
+# Ignorar configurações do VS Code (opcional)
+.vscode/
