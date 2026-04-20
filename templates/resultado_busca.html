@@ -1,0 +1,30 @@
+<div class="search-results">
+    <h3 style="margin-bottom: 10px; font-size: 1.2rem; color: #333;">
+        Resultados para: "{{ query }}"
+    </h3>
+    
+    <hr style="border: none; border-top: 2px solid #E95C13; opacity: 1; margin-bottom: 20px;">
+    
+    {% if resultados %}
+        <div class="list-group">
+            {% for artigo in resultados %}
+                <div style="margin-bottom: 20px; padding: 5px 0;">
+                    <a href="#" 
+                       hx-get="{% url 'detalhe_artigo' artigo.id %}" 
+                       hx-target="#conteudo-direito"
+                       style="font-weight: bold; color: #E95C13; text-decoration: none; font-size: 1.1rem;">
+                       {{ artigo.titulo }}
+                    </a>
+                    <br>
+                    <small style="color: #666; text-transform: uppercase; font-size: 0.75rem;">
+                        Categoria: {{ artigo.categoria.nome }}
+                    </small>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="margin-top: 20px;">
+            <p style="color: #888;">Nenhum resultado encontrado para "<strong>{{ query }}</strong>".</p>
+        </div>
+    {% endif %}
+</div>

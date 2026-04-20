@@ -1,0 +1,11 @@
+<div class="artigo-renderizado">
+    <h2>{{ artigo.titulo }}</h2>
+    <hr>
+    {% if artigo.imagem_capa %}
+        <img src="{{ artigo.imagem_capa.url }}" alt="{{ artigo.titulo }}" style="max-width: 100%; border-radius: 8px; margin-bottom: 20px;">
+    {% endif %}
+    
+    <div style="white-space: pre-wrap; line-height: 1.6;">
+        {{ artigo.conteudo }}
+    </div>
+</div>

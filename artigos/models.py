@@ -12,6 +12,7 @@ class Artigo(models.Model):
     conteudo = models.TextField()
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     data_criacao = models.DateTimeField(auto_now_add=True)
+    imagem_capa = models.ImageField(upload_to='artigos/fotos/', null=True, blank=True)
 
     def __str__(self):
         return self.titulo

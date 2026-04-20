@@ -1,0 +1,7 @@
+<h2>{{ artigo.titulo }}</h2>
+{% if artigo.imagem_capa %}
+    <img src="{{ artigo.imagem_capa.url }}" style="max-width: 100%;">
+{% endif %}
+<div class="texto-artigo">
+    {{ artigo.conteudo|linebreaks }}
+</div>

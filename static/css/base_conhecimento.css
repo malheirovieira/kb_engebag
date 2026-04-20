@@ -23,11 +23,10 @@
     transition: border-color 0.2s ease;
 }
 
-
-
 .search-wrapper:focus-within {
-    border-color: #E95C13;
+    border-color: #E95C13; /* Laranja original */
     outline: none;
+    box-shadow: 0 0 8px rgba(233, 92, 19, 0.2); /* Brilho suave opcional */
 }
 
 .search-icon {
@@ -59,15 +58,25 @@
     flex-grow: 1;
     background: #fff;
     padding: 30px;
-    border: 1px solid #dee2e6; /* BORDAS QUADRADAS */
+    border: 1px solid #dee2e6;
     min-height: 450px;
 }
 
-/* --- MENUS ACORDEÃO (QUADRADOS) --- */
+/* --- MENUS ACORDEÃO (AJUSTADOS) --- */
 .module-group {
-    margin-bottom: -1px; /* Sobrepõe as bordas para não parecer dobrada */
+    margin-bottom: 8px; /* Espaçamento entre os blocos para o 'salto' não bater no de baixo */
     border: 1px solid #dee2e6;
     background: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Prepara a animação */
+    border-radius: 4px; /* Leve arredondado para combinar com o hover */
+}
+
+/* EFEITO DE SALTO E SELEÇÃO NO GRUPO INTEIRO */
+.module-group:hover {
+    transform: translateY(-3px) scale(1.01); /* Pequeno salto e crescimento */
+    border-color: #E95C13; /* Borda fica laranja */
+    box-shadow: 0 4px 12px rgba(233, 92, 19, 0.15); /* Sombra laranja sutil */
+    z-index: 10; /* Garante que fique por cima dos outros ao crescer */
 }
 
 .module-card {
@@ -79,15 +88,16 @@
     justify-content: space-between;
     align-items: center;
     background-color: #fff;
-    transition: background 0.2s;
+    transition: color 0.2s, background-color 0.2s;
 }
 
 .module-card::-webkit-details-marker {
-    display: none; /* Remove a setinha padrão do navegador */
+    display: none;
 }
 
-.module-card:hover {
-    background-color: #fff4ee;
+/* Quando o mouse está sobre o grupo, o título pode mudar de cor tbm */
+.module-group:hover .module-card {
+    color: #E95C13;
 }
 
 /* A setinha (arrow) */
@@ -98,12 +108,11 @@
     display: inline-block;
 }
 
-/* Rotaciona a setinha quando o menu abre */
 details[open] .arrow::before {
     transform: rotate(90deg);
 }
 
-/* --- LISTA DE ARTIGOS (QUANDO ABERTO) --- */
+/* --- LISTA DE ARTIGOS --- */
 .module-list {
     display: flex;
     flex-direction: column;
@@ -121,9 +130,9 @@ details[open] .arrow::before {
 }
 
 .module-list a:hover {
-    background-color: #fff4ee; /* Tom leve de laranja */
+    background-color: #fff4ee;
     color: #E95C13;
-    padding-left: 30px; /* Efeito de deslize ao passar o mouse */
+    padding-left: 30px;
 }
 
 .module-list a:last-child {

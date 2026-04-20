@@ -69,6 +69,7 @@
 .card-link {
     flex: 1;
     color: #333;
+    text-decoration: none;
 }
 
 .main-card {
