@@ -6,11 +6,20 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="header"></div>
+
 <div class="container">
     <div class="search-container">
+        <div class="botao-voltar"> 
+            <a href="javascript:history.back()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+                </svg>
+            </a>
+        </div>
         <div class="search-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-search search-icon" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search search-icon" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
             </svg>
             <input type="text" 
@@ -28,31 +37,54 @@
         <div class="sidebar">
             <div class="modules">
                 
-                {# Loop pelas categorias cadastradas no banco #}
+                {# 1. Categorias Principais (Já vêm ordenadas da View) #}
                 {% for categoria in categorias %}
-                <details class="module-group js-hover-details"> <summary class="module-card"> 
-                        {{ categoria.nome|upper }} <span class="arrow"></span> 
-                    </summary>
-                    <div class="module-list">
-                        {# Loop pelos artigos desta categoria específica #}
-                        {% for artigo in categoria.artigo_set.all %}
-                            <a href="#" 
-                               hx-get="{% url 'detalhe_artigo' artigo.id %}" 
-                               hx-target="#conteudo-direito"
-                               hx-swap="innerHTML">
-                               {{ artigo.titulo }}
-                            </a>
-                        {% empty %}
-                            <a href="#">Nenhum artigo aqui</a>
-                        {% endfor %}
-                    </div>
-                </details>
+                    {% if not categoria.categoria_pai %}
+                    <details class="module-group js-hover-details"> 
+                        <summary class="module-card"> 
+                            {{ categoria.nome|upper }} <span class="arrow"></span> 
+                        </summary>
+                        
+                        <div class="module-list">
+                            {# 2. Subcategorias - Ordenadas por nome #}
+                            {% for sub in categoria.subcategorias.all|dictsort:"nome" %}
+                                <details class="sub-module-group js-hover-details">
+                                    <summary class="sub-module-summary">
+                                        {{ sub.nome }} <span class="arrow"></span>
+                                    </summary>
+                                    <div class="articles-under-sub">
+                                        {# 3. Artigos da Subcategoria - Ordenados por título #}
+                                        {% for artigo in sub.artigo_set.all|dictsort:"titulo" %}
+                                            <a href="#" 
+                                               hx-get="{% url 'detalhe_artigo' artigo.id %}" 
+                                               hx-target="#conteudo-direito"
+                                               hx-swap="innerHTML">
+                                               {{ artigo.titulo }}
+                                            </a>
+                                        {% empty %}
+                                            <a href="#">Nenhum artigo</a>
+                                        {% endfor %}
+                                    </div>
+                                </details>
+                            {% empty %}
+                                {# Artigos diretos na categoria pai - Ordenados por título #}
+                                {% for artigo in categoria.artigo_set.all|dictsort:"titulo" %}
+                                     <a href="#" 
+                                        hx-get="{% url 'detalhe_artigo' artigo.id %}" 
+                                        hx-target="#conteudo-direito"
+                                        hx-swap="innerHTML">
+                                        {{ artigo.titulo }}
+                                     </a>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </details>
+                    {% endif %}
                 {% endfor %}
 
             </div>
         </div>
 
-        {# Área onde o conteúdo do banco ou os resultados da busca serão injetados #}
         <div id="conteudo-direito" class="main-article-card">
             <div id="default-message">
                 <h2>Bem-vindo</h2>
@@ -62,23 +94,35 @@
     </div>
 </div>
 
-{# Script para abrir o menu ao passar o mouse (Hover) #}
-<script>
+<footer>
+    <div class="footer-container">
+        <div class="footer-item">
+            <a href="https://wa.me/551934562991" class="btn-whatsapp" target="_blank">
+                Whatsapp Suporte
+            </a>
+        </div>
+        <div class="footer-item">
+            <div class="footer-copyright">© 2026 Engebag | Tecnologia da Informação</div>
+        </div>
+    </div>
+</footer>
+
+{% comment %} <script>
     document.querySelectorAll('.js-hover-details').forEach(el => {
         let timeout;
         
-        el.addEventListener('mouseenter', () => {
-            // Abre após 300ms (ajuste fino para não ser instantâneo demais)
+        el.addEventListener('mouseenter', (e) => {
+            e.stopPropagation();
             timeout = setTimeout(() => {
                 el.open = true;
-            }, 300); 
+            }, 700); 
         });
 
-        el.addEventListener('mouseleave', () => {
-            // Cancela se o mouse sair antes do tempo e fecha ao sair
+        el.addEventListener('mouseleave', (e) => {
+            e.stopPropagation();
             clearTimeout(timeout);
-            el.open = false;
+            el.open = true;
         });
     });
-</script>
+</script> {% endcomment %}
 {% endblock %}

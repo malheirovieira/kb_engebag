@@ -6,8 +6,11 @@ def home(request):
     return render(request, 'home.html')
 
 def base_conhecimento(request):
-    categorias = Categoria.objects.all()
-    artigos = Artigo.objects.all()
+    # Ordenando Categorias por nome (A-Z)
+    categorias = Categoria.objects.all().order_by('nome')
+    # Ordenando Artigos por título (A-Z)
+    artigos = Artigo.objects.all().order_by('titulo')
+    
     context = {
         'categorias': categorias,
         'artigos': artigos,
@@ -21,10 +24,10 @@ def detalhe_artigo(request, artigo_id):
 def buscar_artigos(request):
     query = request.GET.get('q', '').strip()
     if query:
-        # Filtra os artigos por título ou conteúdo
+        # Filtra e já ordena os resultados da busca por título
         resultados = Artigo.objects.filter(
             Q(titulo__icontains=query) | Q(conteudo__icontains=query)
-        )
+        ).order_by('titulo')
     else:
         resultados = Artigo.objects.none()
     
