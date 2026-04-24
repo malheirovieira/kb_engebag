@@ -36,10 +36,3 @@ venv\Scripts\activate
 pip install django
 python manage.py migrate
 python manage.py runserver
-
----
-
-## 👨‍💻 Autor
-
-Gabriel Malheiro
-https://github.com/malheirovieira
