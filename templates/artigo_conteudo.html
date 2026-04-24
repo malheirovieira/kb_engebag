@@ -1,11 +1,62 @@
-<div class="artigo-renderizado">
-    <h2>{{ artigo.titulo }}</h2>
-    <hr>
+<div class="container mt-4 artigo-renderizado">
+
+    <h1 class="border-bottom pb-2 mb-4">
+        {{ artigo.titulo }}
+    </h1>
+
     {% if artigo.imagem_capa %}
-        <img src="{{ artigo.imagem_capa.url }}" alt="{{ artigo.titulo }}" style="max-width: 100%; border-radius: 8px; margin-bottom: 20px;">
+        <div class="text-center mb-4">
+            <img src="{{ artigo.imagem_capa.url }}"
+                 class="img-fluid rounded shadow-sm"
+                 alt="{{ artigo.titulo }}"
+                 style="max-height: 500px; width: auto;">
+        </div>
     {% endif %}
-    
-    <div class="" style=" line-height: 1.6; ">
-        {{ artigo.conteudo }}
+
+    <div class="conteudo-texto lh-base"
+         style="font-size: 1.1rem; color: #333; line-height: 1.7;">
+
+         {{ artigo.conteudo|safe }}
+
     </div>
+
+    <div class="article-footer mt-5" style="padding-top: 15px; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; color: #777; font-size: 13px; width: 100%;">
+    
+        <div>
+            <i class="bi bi-person-fill me-1"></i>
+            <strong>Créditos:</strong> 
+            {% if artigo.nome_autor_snapshot %}
+                {{ artigo.nome_autor_snapshot }}
+            {% else %}
+                {{ artigo.autor.get_full_name|default:artigo.autor.username }}
+            {% endif %}
+        </div>
+    
+        <div style="text-align: right;">
+            <i class="bi bi-calendar-event me-1"></i>
+            <strong>Publicado em:</strong> {{ artigo.data_criacao|date:"d/m/Y" }} às {{ artigo.data_criacao|date:"H:i" }}
+        </div>
+    
+    </div>
+
+    {% if artigo.arquivo_pdf %}
+        <div class="mt-4 p-4 border-start border-4 border-danger bg-light d-flex align-items-center justify-content-between">
+            <div>
+                <h6 class="mb-1 text-uppercase fw-bold text-muted">
+                    Documentação Técnica
+                </h6>
+                <p class="mb-0">
+                    Clique no botão para abrir o manual oficial.
+                </p>
+            </div>
+
+            <a href="{{ artigo.arquivo_pdf.url }}"
+               target="_blank"
+               class="btn btn-danger d-flex align-items-center">
+                <i class="bi bi-file-earmark-pdf me-2"></i>
+                Abrir PDF
+            </a>
+        </div>
+    {% endif %}
+
 </div>

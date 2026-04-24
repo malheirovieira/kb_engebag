@@ -1,99 +1,132 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{# Título da página exibido na aba do navegador #}
+{% block title %}ENGEBAG Base de Conhecimento{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/base_conhecimento.css' %}">
+<link rel="stylesheet" href="{% static 'css/base_conhecimento.css' %}">
+
+<style>
+/* Destaque visual do artigo selecionado no menu lateral */
+.article-link.highlight-active {
+    background-color: rgba(233, 92, 19, 0.1) !important;
+    border-left: 4px solid #E95C13 !important;
+    color: #E95C13 !important;
+    font-weight: bold !important;
+}
+</style>
 {% endblock %}
 
 {% block content %}
 
+{# Barra superior (faixa laranja) #}
 <div class="header"></div>
 
 <div class="container">
+
+    {# Área superior: botão voltar + busca #}
     <div class="search-container">
-        <div class="botao-voltar"> 
-            <a href="javascript:history.back()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+
+        <!-- BOTÃO VOLTAR -->
+        <!-- Redireciona para a home -->
+        <div class="botao-voltar">
+            <a href="{% url 'home' %}">
+                <!-- Ícone Bootstrap -->
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16"
+                     fill="currentColor"
+                     class="bi bi-arrow-left-circle"
+                     viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
                 </svg>
             </a>
         </div>
+
+        <!-- CAMPO DE BUSCA -->
+        <!-- Utiliza HTMX para buscar artigos sem recarregar a página -->
         <div class="search-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search search-icon" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+
+            <!-- Ícone de lupa -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="16"
+                 height="16"
+                 fill="currentColor"
+                 class="bi bi-search search-icon"
+                 viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
             </svg>
-            <input type="text" 
+
+            <input type="text"
+                   id="campo-busca"
                    name="q"
-                   class="search-input" 
+                   class="search-input"
                    placeholder="Busque a sua pergunta ou palavra chave aqui"
-                   hx-get="{% url 'buscar_artigos' %}" 
-                   hx-trigger="keyup changed delay:500ms" 
+
+                   {# HTMX: chama a view buscar_artigos #}
+                   hx-get="{% url 'buscar_artigos' %}"
+
+                   {# Dispara ao digitar (com delay de 500ms) #}
+                   hx-trigger="keyup changed delay:500ms"
+
+                   {# Onde o resultado será renderizado #}
                    hx-target="#conteudo-direito"
-                   hx-swap="innerHTML">
+
+                   {# Substitui apenas o conteúdo interno #}
+                   hx-swap="innerHTML"
+
+                   {# Verifica se o campo foi limpo #}
+                   oninput="checkEmptySearch(this)">
         </div>
+
     </div>
 
     <div class="content">
+
+        <!-- MENU LATERAL (CATEGORIAS) -->
         <div class="sidebar">
             <div class="modules">
-                
-                {# 1. Categorias Principais (Já vêm ordenadas da View) #}
+
+                {# Renderiza apenas categorias raiz #}
                 {% for categoria in categorias %}
                     {% if not categoria.categoria_pai %}
-                    <details class="module-group js-hover-details"> 
-                        <summary class="module-card"> 
-                            {{ categoria.nome|upper }} <span class="arrow"></span> 
-                        </summary>
-                        
-                        <div class="module-list">
-                            {# 2. Subcategorias - Ordenadas por nome #}
-                            {% for sub in categoria.subcategorias.all|dictsort:"nome" %}
-                                <details class="sub-module-group js-hover-details">
-                                    <summary class="sub-module-summary">
-                                        {{ sub.nome }} <span class="arrow"></span>
-                                    </summary>
-                                    <div class="articles-under-sub">
-                                        {# 3. Artigos da Subcategoria - Ordenados por título #}
-                                        {% for artigo in sub.artigo_set.all|dictsort:"titulo" %}
-                                            <a href="#" 
-                                               hx-get="{% url 'detalhe_artigo' artigo.id %}" 
-                                               hx-target="#conteudo-direito"
-                                               hx-swap="innerHTML">
-                                               {{ artigo.titulo }}
-                                            </a>
-                                        {% empty %}
-                                            <a href="#">Nenhum artigo</a>
-                                        {% endfor %}
-                                    </div>
-                                </details>
-                            {% empty %}
-                                {# Artigos diretos na categoria pai - Ordenados por título #}
-                                {% for artigo in categoria.artigo_set.all|dictsort:"titulo" %}
-                                     <a href="#" 
-                                        hx-get="{% url 'detalhe_artigo' artigo.id %}" 
-                                        hx-target="#conteudo-direito"
-                                        hx-swap="innerHTML">
-                                        {{ artigo.titulo }}
-                                     </a>
-                                {% endfor %}
-                            {% endfor %}
-                        </div>
-                    </details>
+                        {% include "artigos/lista_categorias.html" with categoria=categoria %}
                     {% endif %}
                 {% endfor %}
 
             </div>
         </div>
 
+        <!-- ÁREA PRINCIPAL (CONTEÚDO DINÂMICO) -->
         <div id="conteudo-direito" class="main-article-card">
+
+            <!-- Conteúdo inicial padrão -->
             <div id="default-message">
-                <h2>Bem-vindo</h2>
-                <p>Selecione um módulo à esquerda para visualizar os artigos.</p>
+                <h1>Base de Conhecimento</h1>
+                <p>
+                    Bem-vindo à Central de Conhecimento da empresa.
+                    Utilize a barra de pesquisa ou navegue pelo menu lateral.
+                </p>
             </div>
+
         </div>
+
     </div>
 </div>
 
+{# Template usado para restaurar a tela inicial #}
+<template id="template-boas-vindas">
+    <div id="default-message">
+        <h1>Base de Conhecimento</h1>
+        <p>
+            Utilize a busca ou navegue pelo menu lateral para encontrar conteúdos.
+        </p>
+    </div>
+</template>
+
+{# Rodapé #}
 <footer>
     <div class="footer-container">
         <div class="footer-item">
@@ -102,27 +135,137 @@
             </a>
         </div>
         <div class="footer-item">
-            <div class="footer-copyright">© 2026 Engebag | Tecnologia da Informação</div>
+            <div class="footer-copyright">
+                © 2026 Engebag | Tecnologia da Informação
+            </div>
         </div>
     </div>
 </footer>
 
-{% comment %} <script>
-    document.querySelectorAll('.js-hover-details').forEach(el => {
-        let timeout;
-        
-        el.addEventListener('mouseenter', (e) => {
-            e.stopPropagation();
-            timeout = setTimeout(() => {
-                el.open = true;
-            }, 700); 
-        });
+<script>
 
-        el.addEventListener('mouseleave', (e) => {
-            e.stopPropagation();
-            clearTimeout(timeout);
-            el.open = true;
-        });
+/* ============================================================
+   DESTACA E EXPANDE O MENU AO ABRIR UM ARTIGO
+============================================================ */
+function expandirMenuLateral(artigoId) {
+
+    // Remove destaque anterior
+    document.querySelectorAll('.article-link')
+        .forEach(el => el.classList.remove('highlight-active'));
+
+    const linkArtigo = document.getElementById('link-artigo-' + artigoId);
+
+    if (linkArtigo) {
+
+        // Aplica destaque
+        linkArtigo.classList.add('highlight-active');
+
+        // Expande todos os pais (details)
+        let pai = linkArtigo.closest('details');
+        while (pai) {
+            pai.setAttribute('open', 'true');
+            pai = pai.parentElement.closest('details');
+        }
+
+        // Centraliza o item na tela
+        linkArtigo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+
+/* ============================================================
+   EVENTO HTMX - APÓS CARREGAR ARTIGO
+============================================================ */
+document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+
+    // Recebe ID do artigo via header
+    const artigoId = evt.detail.xhr.getResponseHeader('X-Artigo-ID');
+
+    if (artigoId) expandirMenuLateral(artigoId);
+});
+
+
+/* ============================================================
+   CONTROLE DE ABERTURA DOS MENUS (ACCORDION)
+============================================================ */
+document.addEventListener('click', function(e) {
+
+    const summary = e.target.closest('summary');
+    if (!summary) return;
+
+    const details = summary.parentElement;
+
+    // Se já estiver aberto e tiver submenus abertos → fecha os filhos
+    if (details.hasAttribute('open')) {
+
+        const subAberto = details.querySelector('details[open]');
+
+        if (subAberto) {
+            e.preventDefault();
+
+            details.querySelectorAll('details[open]').forEach(child => {
+                child.removeAttribute('open');
+            });
+        }
+    }
+});
+
+
+/* ============================================================
+   CONTROLE DE BUSCA (EVITA BUSCA VAZIA)
+============================================================ */
+document.body.addEventListener('htmx:beforeRequest', function(evt) {
+
+    const campoBusca = document.getElementById('campo-busca');
+
+    // Se estiver vazio, cancela requisição e reseta tela
+    if (evt.detail.elt === campoBusca && campoBusca.value.trim() === "") {
+        evt.preventDefault();
+        restaurarHome();
+    }
+});
+
+
+/* ============================================================
+   VERIFICA SE CAMPO FOI LIMPO
+============================================================ */
+function checkEmptySearch(input) {
+    if (input.value.trim() === "") {
+        restaurarHome();
+    }
+}
+
+
+/* ============================================================
+   RESTAURA ESTADO INICIAL DA PÁGINA
+============================================================ */
+function restaurarHome() {
+
+    // 1. Restaura conteúdo padrão
+    const conteudoDireito = document.getElementById('conteudo-direito');
+    const template = document.getElementById('template-boas-vindas');
+
+    if (conteudoDireito && template) {
+        conteudoDireito.innerHTML = template.innerHTML;
+    }
+
+    // 2. Remove destaque dos artigos
+    document.querySelectorAll('.article-link').forEach(el => {
+        el.classList.remove('highlight-active');
     });
-</script> {% endcomment %}
+
+    // 3. Fecha todos os menus
+    document.querySelectorAll('.sidebar details').forEach(det => {
+        det.removeAttribute('open');
+    });
+
+    // 4. Limpa campo de busca
+    const campoBusca = document.getElementById('campo-busca');
+    if (campoBusca) {
+        campoBusca.value = "";
+    }
+}
+
+</script>
+
 {% endblock %}

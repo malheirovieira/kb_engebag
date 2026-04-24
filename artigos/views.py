@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Artigo, Categoria
+from .models import Artigo, Categoria, Tag
 from django.db.models import Q 
 
 def home(request):
+    """Renderiza a página inicial do portal."""
     return render(request, 'home.html')
 
 def base_conhecimento(request):
-    # Ordenando Categorias por nome (A-Z)
+    """Exibe a estrutura da Base de Conhecimento com categorias e artigos."""
     categorias = Categoria.objects.all().order_by('nome')
-    # Ordenando Artigos por título (A-Z)
     artigos = Artigo.objects.all().order_by('titulo')
     
     context = {
@@ -18,17 +18,31 @@ def base_conhecimento(request):
     return render(request, 'base_conhecimento.html', context)
 
 def detalhe_artigo(request, artigo_id):
+    """Retorna o conteúdo do artigo e envia IDs para o menu lateral."""
     artigo = get_object_or_404(Artigo, id=artigo_id)
-    return render(request, 'artigo_conteudo.html', {'artigo': artigo})
+    response = render(request, 'artigo_conteudo.html', {'artigo': artigo})
+    
+    response['X-Artigo-ID'] = str(artigo.id)
+    response['X-Categoria-ID'] = str(artigo.categoria.id)
+    
+    return response
 
 def buscar_artigos(request):
+    """Busca precisa por Título, Nome da Categoria ou Tags."""
     query = request.GET.get('q', '').strip()
     if query:
-        # Filtra e já ordena os resultados da busca por título
+        # Filtra por Título, Nome da Categoria ou Nome da Tag
+        # Removido o filtro de 'conteudo' conforme solicitado
         resultados = Artigo.objects.filter(
-            Q(titulo__icontains=query) | Q(conteudo__icontains=query)
-        ).order_by('titulo')
+            Q(titulo__icontains=query) | 
+            Q(categoria__nome__icontains=query) |
+            Q(tags__nome__icontains=query)
+        ).distinct().order_by('titulo')
     else:
         resultados = Artigo.objects.none()
     
-    return render(request, 'resultado_busca.html', {'resultados': resultados, 'query': query})
+    context = {
+        'resultados': resultados, 
+        'query': query
+    }
+    return render(request, 'resultado_busca.html', context)

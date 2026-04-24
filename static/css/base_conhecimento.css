@@ -2,7 +2,6 @@
 
 .header {
     position: relative;
-    top: 0;
     width: 100%;
     height: 9vh;
     box-shadow: 0 10px 20px rgba(0,0,0,0.18);
@@ -10,27 +9,27 @@
 }
 
 .container {
-    max-width: 93%; /* Remove o limite de 1200px para expandir pela tela toda */
-    margin: 40px 0 40px 40px; /* Margens: topo (40), direita (0), baixo (40), esquerda (40) */
-    padding: 0 0 0 20px; /* Mantém apenas o padding da esquerda */
+    max-width: 93%;
+    margin: 40px 0 40px 40px;
+    padding: 0 0 0 20px;
     box-sizing: border-box;
 }
 
-/* --- BUSCA --- */
+/* --- BOTÃO VOLTAR --- */
 .bi-arrow-left-circle {
     height: 4vh;
     width: 4vh;
-    text-decoration: none;
     color: #a2a7ac;
     padding: 10px 10px 0px 0px;
+    transition: 0.4s;
 }
 
 .bi-arrow-left-circle:hover {
-    transform: translateY(-3px) scale(1.01);
-    transition: 0.4s;
+    transform: translateY(-3px);
     color: #E95C13;
 }
 
+/* --- BUSCA --- */
 .search-container {
     margin-bottom: 30px;
     display: flex;
@@ -38,198 +37,194 @@
 }
 
 .search-wrapper {
-    position: relative;
     display: flex;
-    padding: 0 20px;
     align-items: center;
     background: #fff;
     border: 1px solid #ced4da;
     border-radius: 25px;
     padding: 0 15px;
     width: 60vh;
-    transition: border-color 0.2s ease;
+    transition: 0.1s;
 }
 
 .search-wrapper:focus-within {
     border-color: #E95C13;
-    outline: none;
-    box-shadow: 0 0 8px rgba(233, 92, 19, 0.2);
-}
-
-.search-icon {
-    color: #A9A9AC;
-    margin-right: 10px;
+    box-shadow: 0 0 0 2px rgba(233, 92, 19, 0.1);
 }
 
 .search-input {
     all: unset;
     width: 100%;
-    height: 45px;
-    font-size: 15px;
+    height: 42px;
+    font-size: 14px;
     color: #333;
+    margin-left: 10px;
 }
 
-/* --- LAYOUT DE COLUNAS --- */
+/* --- LAYOUT --- */
 .content {
     display: flex;
-    gap: 30px;
+    gap: 25px;
     align-items: flex-start;
 }
 
 .sidebar {
-    width: 300px;
+    width: 300px; /* REDUZIDO */
     flex-shrink: 0;
 }
-
 
 .main-article-card {
     flex-grow: 1;
     background: #fff;
-    padding: 30px;
+    padding: 25px;
     border: 1px solid #dee2e6;
     min-height: 450px;
     border-radius: 4px;
 }
 
-/* --- MENUS ACORDEÃO (Nível 1) --- */
+/* --- CATEGORIAS --- */
+
 .module-group {
-    margin-bottom: 8px;
-    border: 1px solid #dee2e6;
     background: #fff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-radius: 4px;
-    overflow: hidden;
+    border: 1px solid #dee2e6;
+    margin-bottom: 0;
+    border-radius: 0;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border-top: none;
 }
 
-.module-group:hover {
-    transform: translateY(-3px) scale(1.01);
-    border-color: #E95C13;
-    box-shadow: 0 4px 12px rgba(233, 92, 19, 0.15);
+.sidebar > .modules > .module-group:first-child {
+    border-top: 1px solid #dee2e6;
+    border-radius: 4px 4px 0 0;
+}
+
+.sidebar > .modules > .module-group:last-child {
+    border-radius: 0 0 4px 4px;
+}
+
+.module-list .module-group {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Destaque ao abrir */
+.module-group[open] {
+    position: relative;
     z-index: 10;
+    border: 1px solid #E95C13 !important;
 }
 
+details[open]:has(details[open]) {
+    border: 1px solid #dee2e6 !important;
+    z-index: 1;
+}
+
+/* --- CARDS (AJUSTE PRINCIPAL AQUI) --- */
 .module-card {
     list-style: none;
-    padding: 15px;
     cursor: pointer;
     font-weight: bold;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: #333;
     background-color: #fff;
-    transition: color 0.2s;
+    margin: 0;
+
+    /* 🔥 CONTROLE DE ALTURA */
+    padding: 14px 16px;
+    line-height: 1.2;
 }
 
-.module-card::-webkit-details-marker { display: none; }
-
-/* Mantém laranja no hover OU se estiver aberto */
-.module-group:hover .module-card,
-.module-group[open] .module-card {
-    color: #E95C13;
+.module-card::-webkit-details-marker {
+    display: none;
 }
 
-.arrow::before {
-    content: '▶';
-    font-size: 10px;
-    transition: transform 0.2s;
-    display: inline-block;
-}
-
-/* Rotação da seta */
-details[open] > summary .arrow::before {
-    transform: rotate(90deg);
-}
-
-/* --- SUB-MENUS (Nível 2) --- */
 .module-list {
     display: flex;
     flex-direction: column;
-    background-color: #fcfcfc;
-    border-top: 1px solid #dee2e6;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
-.sub-module-group {
-    border-bottom: 1px solid #f1f1f1;
+/* --- ESCALA DE TAMANHOS --- */
+
+/* NÍVEL 1 (categorias principais) */
+.sidebar > .modules > .module-group > .module-card {
+    font-size: 15px;
+    text-transform: uppercase;
 }
 
-.sub-module-summary {
-    list-style: none;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #444;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.2s, color 0.2s;
+/* NÍVEL 2 */
+.sidebar > .modules > .module-group > .module-list > .module-group > .module-card {
+    font-size: 13px;
+    padding: 10px 16px;
 }
 
-/* Mantém a subcategoria laranja se estiver aberta ou no hover */
-.sub-module-group:hover .sub-module-summary,
-.sub-module-group[open] .sub-module-summary {
-    background-color: #fff4ee;
+/* NÍVEL 3 */
+.sidebar > .modules > .module-group > .module-list > .module-group > .module-list > .module-group > .module-card {
+    font-size: 12px;
+    padding: 8px 16px;
+}
+
+/* NÍVEL 4+ */
+.module-list .module-list .module-list .module-card {
+    font-size: 12px;
+    padding: 6px 16px;
+}
+
+/* --- ESTADOS VISUAIS --- */
+.module-card:hover {
+    color: #E95C13 !important;
+    background-color: #fffcfb;
+}
+
+details[open] > .module-card {
     color: #E95C13;
 }
 
-.sub-module-summary::-webkit-details-marker { display: none; }
+details[open]:has(details[open]) > .module-card {
+    color: #333;
+}
 
-/* --- LISTA DE ARTIGOS (Nível 3) --- */
-.module-list a, .articles-under-sub a {
-    padding: 10px 25px;
-    color: #555;
-    font-size: 13.5px;
+/* --- SETAS --- */
+.arrow::before {
+    content: '▶';
+    font-size: 10px;
+    transition: 0.2s;
+    display: inline-block;
+    color: #a2a7ac;
+}
+
+.module-list .module-list .arrow::before {
+    font-size: 8px;
+}
+
+details[open] > .module-card .arrow::before {
+    transform: rotate(90deg);
+    color: #E95C13;
+}
+
+details[open]:has(details[open]) > .module-card .arrow::before {
+    color: #a2a7ac;
+}
+
+/* --- ARTIGOS --- */
+.article-link {
+    padding: 6px 15px 6px 30px;
+    color: #777;
+    font-size: 11px;
     text-decoration: none;
-    transition: all 0.2s;
-    border-left: 3px solid transparent;
+    border-top: 1px solid #f1f1f1;
+    display: block;
 }
 
-.articles-under-sub {
-    display: flex;
-    flex-direction: column;
-    background-color: #fff;
-}
-
-.articles-under-sub a {
-    padding-left: 45px;
-}
-
-.module-list a:hover, .articles-under-sub a:hover {
+.article-link:hover {
     background-color: #fff4ee;
-    color: #E95C13;
-    padding-left: 35px;
+    color: #E95C13 !important;
     border-left: 3px solid #E95C13;
-}
-
-.module-list a:last-child {
-    border-bottom: none;
-}
-
-/* --- RENDERIZAÇÃO --- */
-.artigo-renderizado {
-    width: 100%;
-    max-width: 100%;
-    overflow-wrap: break-word;
-}
-
-/* --- FOOTER --- */
-footer {
-    margin-top: 50px;
-    padding: 20px 0;
-    border-top: 1px solid #dee2e6;
-}
-
-.footer-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.btn-whatsapp {
-    text-decoration: none;
-    color: #25D366;
-    font-weight: bold;
 }
