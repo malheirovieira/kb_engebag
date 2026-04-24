@@ -143,129 +143,129 @@
 </footer>
 
 <script>
-
-/* ============================================================
-   DESTACA E EXPANDE O MENU AO ABRIR UM ARTIGO
-============================================================ */
-function expandirMenuLateral(artigoId) {
-
-    // Remove destaque anterior
-    document.querySelectorAll('.article-link')
-        .forEach(el => el.classList.remove('highlight-active'));
-
-    const linkArtigo = document.getElementById('link-artigo-' + artigoId);
-
-    if (linkArtigo) {
-
-        // Aplica destaque
-        linkArtigo.classList.add('highlight-active');
-
-        // Expande todos os pais (details)
-        let pai = linkArtigo.closest('details');
-        while (pai) {
-            pai.setAttribute('open', 'true');
-            pai = pai.parentElement.closest('details');
-        }
-
-        // Centraliza o item na tela
-        linkArtigo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-}
-
-
-/* ============================================================
-   EVENTO HTMX - APÓS CARREGAR ARTIGO
-============================================================ */
-document.body.addEventListener('htmx:afterOnLoad', function(evt) {
-
-    // Recebe ID do artigo via header
-    const artigoId = evt.detail.xhr.getResponseHeader('X-Artigo-ID');
-
-    if (artigoId) expandirMenuLateral(artigoId);
-});
-
-
-/* ============================================================
-   CONTROLE DE ABERTURA DOS MENUS (ACCORDION)
-============================================================ */
-document.addEventListener('click', function(e) {
-
-    const summary = e.target.closest('summary');
-    if (!summary) return;
-
-    const details = summary.parentElement;
-
-    // Se já estiver aberto e tiver submenus abertos → fecha os filhos
-    if (details.hasAttribute('open')) {
-
-        const subAberto = details.querySelector('details[open]');
-
-        if (subAberto) {
+    /* ============================================================
+       CONTROLE DE CLIQUE: ACORDEÃO EM TODOS OS NÍVEIS
+    ============================================================ */
+    document.addEventListener('click', function(e) {
+        const summary = e.target.closest('summary');
+        const categoryText = e.target.closest('.category-text');
+        
+        if (summary || categoryText) {
             e.preventDefault();
+            e.stopPropagation();
+    
+            const details = (summary || categoryText).closest('details');
+            
+            if (details) {
+                if (details.hasAttribute('open')) {
+                    details.removeAttribute('open');
+                    details.querySelectorAll('details').forEach(child => {
+                        child.removeAttribute('open');
+                    });
+                } else {
+                    const parentContainer = details.parentElement;
+                    const siblingDetails = Array.from(parentContainer.children).filter(el => 
+                        el !== details && (el.tagName.toLowerCase() === 'details' || el.classList.contains('module-group'))
+                    );
 
-            details.querySelectorAll('details[open]').forEach(child => {
-                child.removeAttribute('open');
-            });
+                    siblingDetails.forEach(sibling => {
+                        const targetToClose = sibling.tagName.toLowerCase() === 'details' ? sibling : sibling.querySelector('details');
+                        if (targetToClose) {
+                            targetToClose.removeAttribute('open');
+                            targetToClose.querySelectorAll('details').forEach(subChild => {
+                                subChild.removeAttribute('open');
+                            });
+                        }
+                    });
+
+                    details.setAttribute('open', 'true');
+                    const subMenus = details.querySelectorAll(':scope > .module-list > details');
+                    subMenus.forEach(sub => sub.removeAttribute('open'));
+                }
+            }
+        }
+    });
+
+    
+    /* ============================================================
+       LOCALIZAR E ABRIR CAMINHO NA SIDEBAR (AUTO-EXPAND)
+    ============================================================ */
+    function expandirMenuLateral(artigoId) {
+        // 1. Remove destaque de qualquer outro link
+        document.querySelectorAll('.article-link').forEach(el => {
+            el.classList.remove('highlight-active');
+        });
+    
+        const linkArtigo = document.getElementById('link-artigo-' + artigoId);
+        
+        if (linkArtigo) {
+            // 2. Aplica destaque no artigo atual
+            linkArtigo.classList.add('highlight-active');
+
+            // 3. LÓGICA DE AUTO-ABRIR: Sobe o DOM abrindo todos os <details> pais
+            let parent = linkArtigo.closest('details');
+            while (parent) {
+                parent.setAttribute('open', 'true');
+                // Sobe para o próximo nível acima
+                parent = parent.parentElement.closest('details');
+            }
+            
+            // 4. Scroll suave até o link localizado para o usuário ver onde está
+            setTimeout(() => {
+                linkArtigo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
     }
-});
-
-
-/* ============================================================
-   CONTROLE DE BUSCA (EVITA BUSCA VAZIA)
-============================================================ */
-document.body.addEventListener('htmx:beforeRequest', function(evt) {
-
-    const campoBusca = document.getElementById('campo-busca');
-
-    // Se estiver vazio, cancela requisição e reseta tela
-    if (evt.detail.elt === campoBusca && campoBusca.value.trim() === "") {
-        evt.preventDefault();
-        restaurarHome();
-    }
-});
-
-
-/* ============================================================
-   VERIFICA SE CAMPO FOI LIMPO
-============================================================ */
-function checkEmptySearch(input) {
-    if (input.value.trim() === "") {
-        restaurarHome();
-    }
-}
-
-
-/* ============================================================
-   RESTAURA ESTADO INICIAL DA PÁGINA
-============================================================ */
-function restaurarHome() {
-
-    // 1. Restaura conteúdo padrão
-    const conteudoDireito = document.getElementById('conteudo-direito');
-    const template = document.getElementById('template-boas-vindas');
-
-    if (conteudoDireito && template) {
-        conteudoDireito.innerHTML = template.innerHTML;
-    }
-
-    // 2. Remove destaque dos artigos
-    document.querySelectorAll('.article-link').forEach(el => {
-        el.classList.remove('highlight-active');
+    
+    /* ============================================================
+       EVENTO HTMX - APÓS CARREGAR ARTIGO (INCLUINDO VIA BUSCA)
+    ============================================================ */
+    document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+        // Tenta pegar o ID do cabeçalho enviado pelo Django/Backend
+        const artigoId = evt.detail.xhr.getResponseHeader('X-Artigo-ID');
+        
+        if (artigoId) {
+            expandirMenuLateral(artigoId);
+        }
     });
-
-    // 3. Fecha todos os menus
-    document.querySelectorAll('.sidebar details').forEach(det => {
-        det.removeAttribute('open');
-    });
-
-    // 4. Limpa campo de busca
-    const campoBusca = document.getElementById('campo-busca');
-    if (campoBusca) {
-        campoBusca.value = "";
+    
+    /* ============================================================
+       RESTAURA ESTADO INICIAL (RESET DA TELA)
+    ============================================================ */
+    function restaurarHome() {
+        const conteudoDireito = document.getElementById('conteudo-direito');
+        const template = document.getElementById('template-boas-vindas');
+    
+        if (conteudoDireito && template) {
+            conteudoDireito.innerHTML = template.innerHTML;
+        }
+    
+        document.querySelectorAll('.article-link').forEach(el => {
+            el.classList.remove('highlight-active');
+        });
+    
+        document.querySelectorAll('.sidebar details').forEach(det => {
+            det.removeAttribute('open');
+        });
+    
+        const campoBusca = document.getElementById('campo-busca');
+        if (campoBusca) campoBusca.value = "";
     }
-}
-
+    
+    // Bloqueio de busca vazia e reset
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        const campoBusca = document.getElementById('campo-busca');
+        if (evt.detail.elt === campoBusca && campoBusca.value.trim() === "") {
+            evt.preventDefault();
+            restaurarHome();
+        }
+    });
+    
+    function checkEmptySearch(input) {
+        if (input.value.trim() === "") {
+            restaurarHome();
+        }
+    }
 </script>
 
 {% endblock %}

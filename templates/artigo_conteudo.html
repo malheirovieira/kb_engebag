@@ -1,5 +1,13 @@
 <div class="container mt-4 artigo-renderizado">
 
+    <nav class="breadcrumb-nav">
+        {% for nivel in caminho %}
+            <span class="breadcrumb-step">{{ nivel }}</span>
+            <i class="bi bi-chevron-right separator"></i>
+        {% endfor %}
+        <span class="current-article">{{ artigo.titulo }}</span>
+    </nav>
+
     <h1 class="border-bottom pb-2 mb-4">
         {{ artigo.titulo }}
     </h1>

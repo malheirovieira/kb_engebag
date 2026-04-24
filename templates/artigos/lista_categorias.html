@@ -1,7 +1,12 @@
 <details class="module-group" id="details-cat-{{ categoria.id }}"> 
-    <summary class="module-card"> 
-        {{ categoria.nome|upper }} <span class="arrow"></span> 
+    <summary class="module-card d-flex justify-content-between align-items-center"> 
+        <span class="category-text" style="flex-grow: 1;">
+            {{ categoria.nome|upper }}
+        </span>
+        
+        <span class="arrow"></span> 
     </summary>
+
     <div class="module-list">
         {% for sub in categoria.subcategorias.all|dictsort:"nome" %}
             {% include "artigos/lista_categorias.html" with categoria=sub %}
