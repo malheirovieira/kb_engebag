@@ -143,129 +143,129 @@
 </footer>
 
 <script>
-    /* ============================================================
-       CONTROLE DE CLIQUE: ACORDEÃO EM TODOS OS NÍVEIS
-    ============================================================ */
-    document.addEventListener('click', function(e) {
-        const summary = e.target.closest('summary');
-        const categoryText = e.target.closest('.category-text');
-        
-        if (summary || categoryText) {
-            e.preventDefault();
-            e.stopPropagation();
-    
-            const details = (summary || categoryText).closest('details');
-            
-            if (details) {
-                if (details.hasAttribute('open')) {
-                    details.removeAttribute('open');
-                    details.querySelectorAll('details').forEach(child => {
-                        child.removeAttribute('open');
-                    });
-                } else {
-                    const parentContainer = details.parentElement;
-                    const siblingDetails = Array.from(parentContainer.children).filter(el => 
-                        el !== details && (el.tagName.toLowerCase() === 'details' || el.classList.contains('module-group'))
-                    );
+/* ============================================================
+   CONTROLE DE CLIQUE: ACORDEÃO EM TODOS OS NÍVEIS (AJUSTADO)
+============================================================ */
+document.addEventListener('click', function(e) {
+    const trigger = e.target.closest('.module-card');
 
-                    siblingDetails.forEach(sibling => {
-                        const targetToClose = sibling.tagName.toLowerCase() === 'details' ? sibling : sibling.querySelector('details');
-                        if (targetToClose) {
-                            targetToClose.removeAttribute('open');
-                            targetToClose.querySelectorAll('details').forEach(subChild => {
-                                subChild.removeAttribute('open');
-                            });
-                        }
-                    });
+    if (trigger) {
+        e.preventDefault();
+        e.stopPropagation();
 
-                    details.setAttribute('open', 'true');
-                    const subMenus = details.querySelectorAll(':scope > .module-list > details');
-                    subMenus.forEach(sub => sub.removeAttribute('open'));
-                }
+        const details = trigger.closest('details');
+
+        if (details) {
+            if (details.hasAttribute('open')) {
+                // 🔴 FECHANDO → RESETA CONTEÚDO
+                details.removeAttribute('open');
+
+                // Fecha filhos
+                details.querySelectorAll('details').forEach(child => {
+                    child.removeAttribute('open');
+                });
+
+                // 🔥 VOLTA PARA TELA INICIAL
+                restaurarHome();
+
+            } else {
+                // Fecha irmãos
+                const parentContainer = details.parentElement;
+
+                const siblings = Array.from(parentContainer.children).filter(el =>
+                    el !== details && el.tagName.toLowerCase() === 'details'
+                );
+
+                siblings.forEach(sibling => {
+                    sibling.removeAttribute('open');
+                    sibling.querySelectorAll('details').forEach(sub => {
+                        sub.removeAttribute('open');
+                    });
+                });
+
+                // Abre atual
+                details.setAttribute('open', 'true');
             }
         }
+    }
+});
+
+
+/* ============================================================
+   LOCALIZAR E ABRIR CAMINHO NA SIDEBAR
+============================================================ */
+function expandirMenuLateral(artigoId) {
+    document.querySelectorAll('.article-link').forEach(el => {
+        el.classList.remove('highlight-active');
     });
 
+    const linkArtigo = document.getElementById('link-artigo-' + artigoId);
     
-    /* ============================================================
-       LOCALIZAR E ABRIR CAMINHO NA SIDEBAR (AUTO-EXPAND)
-    ============================================================ */
-    function expandirMenuLateral(artigoId) {
-        // 1. Remove destaque de qualquer outro link
-        document.querySelectorAll('.article-link').forEach(el => {
-            el.classList.remove('highlight-active');
-        });
-    
-        const linkArtigo = document.getElementById('link-artigo-' + artigoId);
-        
-        if (linkArtigo) {
-            // 2. Aplica destaque no artigo atual
-            linkArtigo.classList.add('highlight-active');
+    if (linkArtigo) {
+        linkArtigo.classList.add('highlight-active');
 
-            // 3. LÓGICA DE AUTO-ABRIR: Sobe o DOM abrindo todos os <details> pais
-            let parent = linkArtigo.closest('details');
-            while (parent) {
-                parent.setAttribute('open', 'true');
-                // Sobe para o próximo nível acima
-                parent = parent.parentElement.closest('details');
-            }
-            
-            // 4. Scroll suave até o link localizado para o usuário ver onde está
-            setTimeout(() => {
-                linkArtigo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+        let parent = linkArtigo.closest('details');
+        while (parent) {
+            parent.setAttribute('open', 'true');
+            parent = parent.parentElement.closest('details');
         }
+
+        setTimeout(() => {
+            linkArtigo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     }
+}
+
+
+/* ============================================================
+   EVENTO HTMX - APÓS CARREGAR ARTIGO
+============================================================ */
+document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+    const artigoId = evt.detail.xhr.getResponseHeader('X-Artigo-ID');
     
-    /* ============================================================
-       EVENTO HTMX - APÓS CARREGAR ARTIGO (INCLUINDO VIA BUSCA)
-    ============================================================ */
-    document.body.addEventListener('htmx:afterOnLoad', function(evt) {
-        // Tenta pegar o ID do cabeçalho enviado pelo Django/Backend
-        const artigoId = evt.detail.xhr.getResponseHeader('X-Artigo-ID');
-        
-        if (artigoId) {
-            expandirMenuLateral(artigoId);
-        }
+    if (artigoId) {
+        expandirMenuLateral(artigoId);
+    }
+});
+
+
+/* ============================================================
+   RESTAURA ESTADO INICIAL
+============================================================ */
+function restaurarHome() {
+    const conteudoDireito = document.getElementById('conteudo-direito');
+    const template = document.getElementById('template-boas-vindas');
+
+    if (conteudoDireito && template) {
+        conteudoDireito.innerHTML = template.innerHTML;
+    }
+
+    document.querySelectorAll('.article-link').forEach(el => {
+        el.classList.remove('highlight-active');
     });
-    
-    /* ============================================================
-       RESTAURA ESTADO INICIAL (RESET DA TELA)
-    ============================================================ */
-    function restaurarHome() {
-        const conteudoDireito = document.getElementById('conteudo-direito');
-        const template = document.getElementById('template-boas-vindas');
-    
-        if (conteudoDireito && template) {
-            conteudoDireito.innerHTML = template.innerHTML;
-        }
-    
-        document.querySelectorAll('.article-link').forEach(el => {
-            el.classList.remove('highlight-active');
-        });
-    
-        document.querySelectorAll('.sidebar details').forEach(det => {
-            det.removeAttribute('open');
-        });
-    
-        const campoBusca = document.getElementById('campo-busca');
-        if (campoBusca) campoBusca.value = "";
+}
+
+
+/* ============================================================
+   BLOQUEIO DE BUSCA VAZIA
+============================================================ */
+document.body.addEventListener('htmx:beforeRequest', function(evt) {
+    const campoBusca = document.getElementById('campo-busca');
+    if (evt.detail.elt === campoBusca && campoBusca.value.trim() === "") {
+        evt.preventDefault();
+        restaurarHome();
     }
-    
-    // Bloqueio de busca vazia e reset
-    document.body.addEventListener('htmx:beforeRequest', function(evt) {
-        const campoBusca = document.getElementById('campo-busca');
-        if (evt.detail.elt === campoBusca && campoBusca.value.trim() === "") {
-            evt.preventDefault();
-            restaurarHome();
-        }
-    });
-    
-    function checkEmptySearch(input) {
-        if (input.value.trim() === "") {
-            restaurarHome();
-        }
+});
+
+
+/* ============================================================
+   VERIFICA CAMPO LIMPO
+============================================================ */
+function checkEmptySearch(input) {
+    if (input.value.trim() === "") {
+        restaurarHome();
     }
+}
 </script>
 
 {% endblock %}

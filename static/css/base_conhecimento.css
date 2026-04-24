@@ -15,23 +15,23 @@
     box-sizing: border-box;
 }
 
-/* --- BOTÃO VOLTAR --- */
+/* --- BOTÃO VOLTAR (REDUZIDO) --- */
 .bi-arrow-left-circle {
-    height: 4vh;
-    width: 4vh;
+    height: 3vh;
+    width: 3vh;
     color: #a2a7ac;
-    padding: 10px 10px 0px 0px;
-    transition: 0.4s;
+    padding: 6px 6px 0px 0px;
+    transition: 0.3s ease;
 }
 
 .bi-arrow-left-circle:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     color: #E95C13;
 }
 
-/* --- BUSCA --- */
+/* --- BUSCA (REDUZIDA) --- */
 .search-container {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     display: flex;
     align-items: center;
 }
@@ -41,24 +41,30 @@
     align-items: center;
     background: #fff;
     border: 1px solid #ced4da;
-    border-radius: 25px;
-    padding: 0 15px;
-    width: 60vh;
-    transition: 0.1s;
+    border-radius: 20px;
+    padding: 0 10px;
+    width: 48vh;
+    height: 36px;
+    transition: all 0.2s ease;
 }
 
 .search-wrapper:focus-within {
-    border-color: #E95C13;
-    box-shadow: 0 0 0 2px rgba(233, 92, 19, 0.1);
+    border: 1px solid #E95C13;
+    box-shadow: 0 0 0 2px rgba(233, 92, 19, 0.15);
 }
 
 .search-input {
     all: unset;
     width: 100%;
-    height: 42px;
-    font-size: 14px;
+    height: 100%;
+    font-size: 12px;
     color: #333;
-    margin-left: 10px;
+    margin-left: 8px;
+}
+
+.search-icon {
+    width: 14px;
+    height: 14px;
 }
 
 /* --- LAYOUT --- */
@@ -68,168 +74,193 @@
     align-items: flex-start;
 }
 
+/* SIDEBAR */
 .sidebar {
     width: 320px;
     flex-shrink: 0;
-    perspective: 1000px;
+    transform: scale(0.85);
+    transform-origin: top left;
 }
 
-.main-article-card {
-    flex-grow: 1;
-    background: #fff;
-    padding: 25px;
+/* --- CONTAINER SIDEBAR --- */
+.sidebar .modules {
     border: 1px solid #dee2e6;
-    min-height: 450px;
-    border-radius: 4px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
 }
 
-/* --- CATEGORIAS (BASE) --- */
+/* --- CATEGORIAS --- */
 .module-group {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    margin-bottom: 0;
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    border-top: none;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transform-origin: center center;
-}
-
-.sidebar > .modules > .module-group:first-child {
     border-top: 1px solid #dee2e6;
-    border-radius: 4px 4px 0 0;
+    transition: all 0.25s ease;
 }
 
-.sidebar > .modules > .module-group:last-child {
-    border-radius: 0 0 4px 4px;
+.sidebar .module-group:first-child {
+    border-top: none;
 }
 
-.module-list .module-group {
-    border: 1px solid #dee2e6;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-}
+/* =====================================
+    🔥 SISTEMA DE FOCO INTELIGENTE
+===================================== */
 
-/* --- TRANSFORM SUAVE (ESCALA REDUZIDA) --- */
-.sidebar > .modules > .module-group[open] {
-    opacity: 1 !important;
-    filter: grayscale(0%) !important;
-    position: relative;
-    z-index: 50; 
-    border-color: #E95C13 !important;
-    transform: scale(1.02); /* Ajustado para ser menor */
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-}
-
-.module-list .module-group[open] {
-    transform: scale(1) !important;
-    box-shadow: none !important;
-    z-index: 1;
-}
-
-.sidebar > .modules:has(.module-group[open]) > .module-group:not([open]) {
+.sidebar:has(.module-group[open]) .module-group {
     opacity: 0.35;
     filter: grayscale(100%);
-    transform: scale(0.98);
 }
 
-/* --- CARDS E ESCALA DE FONTES --- */
+.module-group[open],
+.module-group:has(.module-group[open]) {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+/* CONTORNO PREMIUM */
+.module-group[open] {
+    border: 1px solid rgba(233, 92, 19, 0.5) !important;
+    background: #fff8f5;
+    border-radius: 0px; /* Removido border-radius para não quebrar o alinhamento reto */
+
+    box-shadow:
+        inset 0 1px 3px rgba(0,0,0,0.06),
+        inset 0 0 0 1px rgba(233, 92, 19, 0.08);
+
+    transform: none;
+}
+
+.module-group:has(.module-group[open]) {
+    border: 1px solid #dee2e6 !important;
+    background: #fff;
+}
+
+/* --- CARDS --- */
 .module-card {
-    list-style: none;
     cursor: pointer;
     font-weight: bold;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #333;
-    background-color: #fff;
     padding: 14px 16px;
-    line-height: 1.2;
-    transition: color 0.3s ease;
+    background: #fff;
+    transition: all 0.2s ease;
 }
 
+/* --- TAMANHOS --- */
 .sidebar > .modules > .module-group > .module-card {
-    font-size: 20px;
+    font-size: 17px;
     text-transform: uppercase;
 }
 
-.module-list .module-group .module-card {
-    font-size: 18px;
-    padding: 12px 16px;
+.module-list > .module-group > .module-card {
+    font-size: 13px;
 }
 
-.module-list .module-list .module-group .module-card {
-    font-size: 16px;
-    padding: 10px 16px;
+.module-list .module-list > .module-group > .module-card {
+    font-size: 12px;
 }
 
-.module-card::-webkit-details-marker { display: none; }
+.module-list .module-list .module-list > .module-group > .module-card {
+    font-size: 11px;
+}
 
+.module-group:has(.module-group[open]) 
+> .module-list 
+> .module-group:not([open]) .module-card {
+    font-size: 11px;
+}
+
+.module-card::-webkit-details-marker {
+    display: none;
+}
+
+/* =====================================
+    🔥 AJUSTE DE ALINHAMENTO VERTICAL
+    (Remove o recuo lateral para cair reto)
+===================================== */
 .module-list {
     display: flex;
     flex-direction: column;
-    padding: 0 !important;
-    margin: 0 !important;
+    margin: 0;
+    padding-left: 0; /* ZERADO: faz os itens caírem reto para baixo */
+    border-left: none; /* Removido para manter o alinhamento limpo */
 }
 
-details[open] > .module-card {
-    color: #E95C13 !important;
-    background-color: rgba(233, 92, 19, 0.02);
+/* --- ACCORDION --- */
+.module-group > .module-list {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
 }
 
+.module-group[open] > .module-list {
+    max-height: 1000px;
+}
+
+/* --- HOVER --- */
 .module-card:hover {
-    color: #E95C13 !important;
-    background-color: #fffcfb;
-    opacity: 1 !important;
+    color: #E95C13;
+    background-color: #fff4ee;
 }
 
-/* --- SETAS --- */
+/* =====================================
+    🔽 SETA
+===================================== */
+
+.arrow {
+    display: inline-block;
+    transition: transform 0.25s ease, color 0.25s ease;
+    color: #b0b0b0;
+    font-size: 10px;
+}
+
 .arrow::before {
     content: '▶';
-    font-size: 12px;
-    transition: 0.3s;
-    display: inline-block;
-    color: #a2a7ac;
 }
 
-details[open] > .module-card .arrow::before {
+.module-group[open] > .module-card .arrow {
     transform: rotate(90deg);
     color: #E95C13;
 }
 
-/* --- ARTIGOS (16px) --- */
+/* --- ARTIGOS --- */
 .article-link {
-    padding: 10px 15px 10px 35px;
+    padding: 10px 15px 10px 16px; /* Ajustado para alinhar com o texto dos cards superiores */
+    font-size: 11px;
     color: #777;
-    font-size: 16px; 
     text-decoration: none;
     border-top: 1px solid #f1f1f1;
     display: block;
-    transition: 0.2s;
+}
+
+.article-link.highlight-active {
+    background-color: rgba(233, 92, 19, 0.12);
+    border-left: 4px solid #E95C13;
+    color: #E95C13;
+    font-weight: bold;
 }
 
 .article-link:hover {
     background-color: #fff4ee;
-    color: #E95C13 !important;
-    border-left: 4px solid #E95C13;
+    color: #E95C13;
 }
 
-.article-link.highlight-active {
-    background-color: rgba(233, 92, 19, 0.1) !important;
-    border-left: 5px solid #E95C13 !important;
-    color: #E95C13 !important;
-    font-weight: bold !important;
+/* --- ARTIGO --- */
+.main-article-card {
+    flex-grow: 1;
+    background: #fff;
+    padding: 25px;
+    border: 1px solid #dee2e6;
+    min-height: 450px;
+    border-radius: 6px;
 }
 
-/* --- AJUSTE DO CAMINHO (BREADCRUMB) NO TOPO --- */
+/* --- BREADCRUMB --- */
 .breadcrumb-nav {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 8px; /* Espaço para não encostar no título */
-    padding-left: 2px;
+    margin-bottom: 8px;
 }
 
 .breadcrumb-step {
@@ -238,27 +269,15 @@ details[open] > .module-card .arrow::before {
     text-transform: uppercase;
 }
 
-.breadcrumb-nav .separator {
-    font-size: 10px;
-    color: #ced4da;
-}
-
 .current-article {
     font-size: 12px;
-    color: #E95C13; /* Laranja Engebag */
+    color: #E95C13;
     font-weight: bold;
-    text-transform: uppercase;
 }
 
-/* Garante que o título do artigo não tenha uma margem superior gigante */
-.artigo-renderizado h1 {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-}
-
+/* --- TÍTULO --- */
 .article-title {
     font-size: 28px;
-    color: #333;
     font-weight: bold;
     margin-top: 0;
 }
