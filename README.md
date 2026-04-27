@@ -16,10 +16,12 @@ Este projeto conta com a colaboração das seguintes pessoas:
 
 ## 🚀 Funcionalidades
 
+- Portal De Acessos e Sistemas
+- Redirecionamento WhatsApp
 - Busca por título, categorias e tags  
-- Navegação dinâmica com HTMX (sem recarregar a página)  
-- Menu lateral hierárquico (categorias e subcategorias)  
-- Cadastro de artigos com autor e data  
+- Navegação dinâmica com HTMX
+- Cadastro de artigos
+- Medidor de satisfação (NPS)
 - Editor de texto com CKEditor  
 - Interface simples e responsiva  
 
