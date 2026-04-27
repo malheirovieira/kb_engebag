@@ -33,7 +33,6 @@ git clone https://github.com/malheirovieira/kb_engebag.git
 cd kb_engebag
 python -m venv venv
 venv\Scripts\activate
-pip install django
-pip install django-ckeditor
+pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
