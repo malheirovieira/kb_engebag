@@ -72,7 +72,7 @@
 /* --- LAYOUT PRINCIPAL --- */
 .content {
     display: flex;
-    gap: 25px;
+    gap: 0px;
     align-items: flex-start;
 }
 
@@ -114,16 +114,30 @@
     filter: none !important;
 }
 
-/* Destaque da categoria ativa (AJUSTADO - contorno mais forte) */
+/* Destaque da categoria ativa */
 .module-group[open] {
-    border: 2px solid #E95C13 !important; /* aumentado de 1px para 2px */
+    border: 2px solid #E95C13 !important;
     background: #fff8f5;
     border-radius: 0px;
 
     box-shadow:
         inset 0 1px 3px rgba(0,0,0,0.06),
-        inset 0 0 0 1px rgba(233, 92, 19, 0.15), /* leve reforço interno */
-        0 0 0 1px rgba(233, 92, 19, 0.25); /* contorno externo suave */
+        inset 0 0 0 1px rgba(233, 92, 19, 0.15),
+        0 0 0 1px rgba(233, 92, 19, 0.25);
+}
+
+/*  AJUSTE: Hierarquia visual por nível */
+.module-group[open] > .module-card {
+    background-color: #fbe3d6;
+    color: #E95C13;
+}
+
+.module-group[open] .module-group[open] > .module-card {
+    background-color: #fff1ea;
+}
+
+.module-group[open] .module-group[open] .module-group[open] > .module-card {
+    background-color: #fff7f3;
 }
 
 .module-group:has(.module-group[open]) {
@@ -226,8 +240,8 @@
 }
 
 .article-link.highlight-active {
-    background-color: rgba(233, 92, 19, 0.12);
-    border-left: 4px solid #E95C13;
+    background-color: #fff9f6; /* tom mais suave (último nível) */
+    border-left: 3px solid #f4a074; /* laranja mais suave */
     color: #E95C13;
     font-weight: bold;
 }
@@ -284,4 +298,185 @@
     font-size: 28px;
     font-weight: bold;
     margin-top: 0;
+}
+
+/* =====================================================
+    WIDGET DE AVALIAÇÃO (Janela Principal)
+===================================================== */
+
+.avaliacao-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 360px;
+    background: #fff;
+    border-radius: 8px; /* Ajustado para 8px conforme pedido */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    overflow: hidden;
+    z-index: 9999;
+
+    /* Controle de visibilidade */
+    transform: translateX(120%);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+}
+
+/* Estado visível da Janela */
+.avaliacao-widget.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Cabeçalho */
+.avaliacao-header {
+    background: #E95C13;
+    color: #fff;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Botões do header (Minimizar e Fechar) */
+.avaliacao-actions button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 8px;
+    line-height: 1;
+}
+
+.avaliacao-actions button:hover {
+    opacity: 0.7;
+}
+
+/* Corpo */
+.avaliacao-body {
+    padding: 15px;
+}
+
+.avaliacao-pergunta {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Notas de 0 a 10 */
+.avaliacao-notas {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 15px;
+}
+
+.nota-btn {
+    flex: 1;
+    border: none;
+    padding: 6px 0;
+    font-size: 11px;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+.nota-btn:hover {
+    transform: scale(1.15);
+    filter: brightness(1.1);
+}
+
+.nota-btn.selected {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+/* Cores NPS */
+.nota-0 { background:#c62828; } .nota-1 { background:#d84315; } .nota-2 { background:#ef6c00; }
+.nota-3 { background:#f57c00; } .nota-4 { background:#f9a825; } .nota-5 { background:#fbc02d; }
+.nota-6 { background:#fdd835; } .nota-7 { background:#c0ca33; } .nota-8 { background:#9ccc65; }
+.nota-9 { background:#7cb342; } .nota-10 { background:#43a047; }
+
+/* Grupo de Input */
+.avaliacao-input-group {
+    position: relative;
+    margin-top: 5px;
+}
+
+.avaliacao-body textarea {
+    width: 100%;
+    height: 80px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px; /* Combinando com o estilo mais arredondado */
+    padding: 10px;
+    padding-right: 40px; 
+    resize: none;
+    font-size: 12px;
+    outline: none;
+    background: #fff;
+    transition: border 0.2s ease;
+}
+
+.avaliacao-body textarea:focus {
+    border: 1px solid #E95C13;
+}
+
+.btn-enviar-avaliacao {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    background: transparent;
+    border: none;
+    color: #E95C13;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-enviar-avaliacao:hover {
+    transform: scale(1.2);
+}
+
+/* =====================================================
+    BOTÃO FLUTUANTE (Ajuste Corrigido)
+===================================================== */
+
+.avaliacao-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 20px;
+    background: #E95C13;
+    color: #fff;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 10000;
+
+    /* O display flex deve ficar aqui, fora do hover! */
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4px;
+    
+    transition: transform 0.3s ease, background 0.3s;
+}
+
+/* No hover, apenas mudamos a escala e a cor */
+.avaliacao-toggle:hover {
+    transform: scale(1.1);
+    background: #d15211;
+}
+
+/* Classes Utilitárias */
+.hidden {
+    display: none !important;
 }
