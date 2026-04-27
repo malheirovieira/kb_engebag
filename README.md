@@ -4,6 +4,16 @@ Sistema de **Base de Conhecimento (Knowledge Base)** para organização e consul
 
 ---
 
+# Autores e Contribuidores
+
+Este projeto conta com a colaboração das seguintes pessoas:
+
+### Autor Principal
+* **Gabriel Malheiro** - [malheirovieira.g@gmail.com](mailto:malheirovieira.g@gmail.com)
+
+### Auxiliares
+* **Henrique de Barros** - [barros.henrique.arroyo@gmail.com](mailto:barros.henrique.arroyo@gmail.com)
+
 ## 🚀 Funcionalidades
 
 - Busca por título, categorias e tags  
