@@ -18,25 +18,27 @@ def base_conhecimento(request):
     return render(request, 'base_conhecimento.html', context)
 
 def detalhe_artigo(request, artigo_id):
-    """Retorna o conteúdo do artigo com rastro de pão completo e infinito."""
+    """Retorna o conteúdo do artigo com rastro de pão completo."""
     artigo = get_object_or_404(Artigo, id=artigo_id)
     
     def get_caminho_recursivo(categoria):
-        """Função interna para escalar a árvore de categorias até o topo."""
+        """Escala a árvore de categorias até o topo retornando os objetos."""
         if not categoria:
             return []
         
-        # Tenta pegar o pai (testa 'pai' ou 'parent')
+        # Identifica o campo pai (compatível com diferentes nomes)
         pai = None
-        if hasattr(categoria, 'pai'):
+        if hasattr(categoria, 'categoria_pai'):
+            pai = categoria.categoria_pai
+        elif hasattr(categoria, 'pai'):
             pai = categoria.pai
         elif hasattr(categoria, 'parent'):
             pai = categoria.parent
-            
-        # RECURSÃO: Pega o caminho do pai e adiciona o nome da categoria atual no final
-        return get_caminho_recursivo(pai) + [categoria.nome]
 
-    # Gera a lista completa: ['DEPARTAMENTO', 'PROGRAMA', 'SUBCATEGORIA']
+        # Retorna o caminho completo (objetos categoria)
+        return get_caminho_recursivo(pai) + [categoria]
+
+    # Agora retorna objetos, não apenas nomes
     caminho = get_caminho_recursivo(artigo.categoria)
 
     context = {
@@ -46,7 +48,7 @@ def detalhe_artigo(request, artigo_id):
     
     response = render(request, 'artigo_conteudo.html', context)
     
-    # Cabeçalhos para o JavaScript e HTMX
+    # Cabeçalhos para integração com HTMX
     response['X-Artigo-ID'] = str(artigo.id)
     if artigo.categoria:
         response['X-Categoria-ID'] = str(artigo.categoria.id)

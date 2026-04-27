@@ -1,5 +1,6 @@
 /* base_conhecimento.css */
 
+/* --- HEADER --- */
 .header {
     position: relative;
     width: 100%;
@@ -8,6 +9,7 @@
     background-color: #E95C13;
 }
 
+/* --- CONTAINER PRINCIPAL --- */
 .container {
     max-width: 93%;
     margin: 40px 0 40px 40px;
@@ -15,7 +17,7 @@
     box-sizing: border-box;
 }
 
-/* --- BOTÃO VOLTAR (REDUZIDO) --- */
+/* --- BOTÃO VOLTAR --- */
 .bi-arrow-left-circle {
     height: 3vh;
     width: 3vh;
@@ -29,7 +31,7 @@
     color: #E95C13;
 }
 
-/* --- BUSCA (REDUZIDA) --- */
+/* --- CAMPO DE BUSCA --- */
 .search-container {
     margin-bottom: 25px;
     display: flex;
@@ -67,14 +69,14 @@
     height: 14px;
 }
 
-/* --- LAYOUT --- */
+/* --- LAYOUT PRINCIPAL --- */
 .content {
     display: flex;
     gap: 25px;
     align-items: flex-start;
 }
 
-/* SIDEBAR */
+/* --- SIDEBAR --- */
 .sidebar {
     width: 320px;
     flex-shrink: 0;
@@ -82,7 +84,7 @@
     transform-origin: top left;
 }
 
-/* --- CONTAINER SIDEBAR --- */
+/* Container da sidebar */
 .sidebar .modules {
     border: 1px solid #dee2e6;
     border-radius: 8px;
@@ -100,10 +102,7 @@
     border-top: none;
 }
 
-/* =====================================
-    🔥 SISTEMA DE FOCO INTELIGENTE
-===================================== */
-
+/* --- FOCO VISUAL EM CATEGORIA ABERTA --- */
 .sidebar:has(.module-group[open]) .module-group {
     opacity: 0.35;
     filter: grayscale(100%);
@@ -115,17 +114,16 @@
     filter: none !important;
 }
 
-/* CONTORNO PREMIUM */
+/* Destaque da categoria ativa (AJUSTADO - contorno mais forte) */
 .module-group[open] {
-    border: 1px solid rgba(233, 92, 19, 0.5) !important;
+    border: 2px solid #E95C13 !important; /* aumentado de 1px para 2px */
     background: #fff8f5;
-    border-radius: 0px; /* Removido border-radius para não quebrar o alinhamento reto */
+    border-radius: 0px;
 
     box-shadow:
         inset 0 1px 3px rgba(0,0,0,0.06),
-        inset 0 0 0 1px rgba(233, 92, 19, 0.08);
-
-    transform: none;
+        inset 0 0 0 1px rgba(233, 92, 19, 0.15), /* leve reforço interno */
+        0 0 0 1px rgba(233, 92, 19, 0.25); /* contorno externo suave */
 }
 
 .module-group:has(.module-group[open]) {
@@ -133,7 +131,7 @@
     background: #fff;
 }
 
-/* --- CARDS --- */
+/* --- CARDS DE CATEGORIA --- */
 .module-card {
     cursor: pointer;
     font-weight: bold;
@@ -146,7 +144,7 @@
     transition: all 0.2s ease;
 }
 
-/* --- TAMANHOS --- */
+/* Tamanhos por nível */
 .sidebar > .modules > .module-group > .module-card {
     font-size: 17px;
     text-transform: uppercase;
@@ -174,19 +172,16 @@
     display: none;
 }
 
-/* =====================================
-    🔥 AJUSTE DE ALINHAMENTO VERTICAL
-    (Remove o recuo lateral para cair reto)
-===================================== */
+/* --- LISTA INTERNA --- */
 .module-list {
     display: flex;
     flex-direction: column;
     margin: 0;
-    padding-left: 0; /* ZERADO: faz os itens caírem reto para baixo */
-    border-left: none; /* Removido para manter o alinhamento limpo */
+    padding-left: 0;
+    border-left: none;
 }
 
-/* --- ACCORDION --- */
+/* --- ACORDEÃO --- */
 .module-group > .module-list {
     max-height: 0;
     overflow: hidden;
@@ -203,10 +198,7 @@
     background-color: #fff4ee;
 }
 
-/* =====================================
-    🔽 SETA
-===================================== */
-
+/* --- SETA DE EXPANSÃO --- */
 .arrow {
     display: inline-block;
     transition: transform 0.25s ease, color 0.25s ease;
@@ -223,9 +215,9 @@
     color: #E95C13;
 }
 
-/* --- ARTIGOS --- */
+/* --- LINKS DE ARTIGOS --- */
 .article-link {
-    padding: 10px 15px 10px 16px; /* Ajustado para alinhar com o texto dos cards superiores */
+    padding: 10px 15px 10px 16px;
     font-size: 11px;
     color: #777;
     text-decoration: none;
@@ -245,7 +237,7 @@
     color: #E95C13;
 }
 
-/* --- ARTIGO --- */
+/* --- CARD DO ARTIGO --- */
 .main-article-card {
     flex-grow: 1;
     background: #fff;
@@ -255,27 +247,39 @@
     border-radius: 6px;
 }
 
-/* --- BREADCRUMB --- */
+/* =====================================================
+   BREADCRUMB (Rastro de navegação)
+===================================================== */
+
 .breadcrumb-nav {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+    font-size: 11px;
+}
+
+.breadcrumb-label {
+    font-weight: bold;
+    color: #888;
 }
 
 .breadcrumb-step {
-    font-size: 12px;
-    color: #a2a7ac;
+    color: #999;
     text-transform: uppercase;
 }
 
+.separator {
+    color: #bbb;
+}
+
 .current-article {
-    font-size: 12px;
     color: #E95C13;
     font-weight: bold;
 }
 
-/* --- TÍTULO --- */
+/* --- TÍTULO DO ARTIGO --- */
 .article-title {
     font-size: 28px;
     font-weight: bold;
