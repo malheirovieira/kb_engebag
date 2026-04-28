@@ -3,10 +3,6 @@
 
 {% block title %}ENGEBAG Base de Conhecimento{% endblock %}
 
-
-<!-- ================================
-     CSS
-================================ -->
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/base_conhecimento.css' %}">
 
@@ -20,167 +16,108 @@
 </style>
 {% endblock %}
 
-
-<!-- ================================
-     CONTEÚDO
-================================ -->
 {% block content %}
 
 <div class="header"></div>
 
 <div class="container">
 
-    <!-- ================================
-         TOPO (VOLTA + BUSCA)
-    ================================= -->
     <div class="search-container">
-
-        <!-- BOTÃO VOLTAR -->
         <div class="botao-voltar">
             <a href="{% url 'home' %}">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="16"
-                     height="16"
-                     fill="currentColor"
-                     class="bi bi-arrow-left-circle"
-                     viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
-                          d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+                        d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
                 </svg>
             </a>
         </div>
 
-        <!-- CAMPO DE BUSCA -->
         <div class="search-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 width="16"
-                 height="16"
-                 fill="currentColor"
-                 class="bi bi-search search-icon"
-                 viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
             </svg>
 
-            <input type="text"
-                   id="campo-busca"
-                   name="q"
-                   class="search-input"
-                   placeholder="Busque a sua pergunta ou palavra chave aqui"
-                   hx-get="{% url 'buscar_artigos' %}"
-                   hx-trigger="keyup changed delay:500ms"
-                   hx-target="#conteudo-direito"
-                   hx-swap="innerHTML"
-                   oninput="checkEmptySearch(this)">
+            <input type="text" id="campo-busca" name="q" class="search-input"
+                placeholder="Busque a sua pergunta ou palavra chave aqui" hx-get="{% url 'buscar_artigos' %}"
+                hx-trigger="keyup changed delay:500ms" hx-target="#conteudo-direito" hx-swap="innerHTML"
+                hx-indicator="#indicador-global"
+                oninput="checkEmptySearch(this)">
         </div>
-
     </div>
 
-
-    <!-- ================================
-         LAYOUT (SIDEBAR + CONTEÚDO)
-    ================================= -->
     <div class="content">
-
-        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="modules">
-
                 {% for categoria in categorias %}
                     {% if not categoria.categoria_pai %}
                         {% include "artigos/lista_categorias.html" with categoria=categoria %}
                     {% endif %}
                 {% endfor %}
-
             </div>
         </div>
 
-        <!-- CONTEÚDO DIREITO -->
-        <div id="conteudo-direito" class="main-article-card">
-
-            <div id="default-message">
-                <h1>Base de Conhecimento</h1>
-                <p>
-                    Bem-vindo à Central de Conhecimento da empresa.
-                    Utilize a barra de pesquisa ou navegue pelo menu lateral.
-                </p>
+        <div id="conteudo-direito-container" style="position: relative; flex-grow: 1;">
+            <div id="indicador-global" class="htmx-indicator overlay-loader">
+                <div class="spinner"></div>
             </div>
 
+            <div id="conteudo-direito" class="main-article-card">
+                <div id="default-message">
+                    <h1>Base de Conhecimento</h1>
+                    <p>Bem-vindo à Central de Conhecimento da empresa. Utilize a barra de pesquisa ou navegue pelo menu lateral.</p>
+                </div>
+            </div>
         </div>
-
     </div>
 </div>
 
-
-<!-- ================================
-     TEMPLATE HOME
-================================ -->
 <template id="template-boas-vindas">
     <div id="default-message">
         <h1>Base de Conhecimento</h1>
-        <p>
-            Utilize a busca ou navegue pelo menu lateral para encontrar conteúdos.
-        </p>
+        <p>Utilize a busca ou navegue pelo menu lateral para encontrar conteúdos.</p>
     </div>
 </template>
 
-
-<!-- ================================
-     FOOTER
-================================ -->
-<footer>
-    <div class="footer-container">
-        <div class="footer-item">
-            <a href="https://wa.me/551934562991" class="btn-whatsapp" target="_blank">
-                Whatsapp Suporte
-            </a>
-        </div>
-        <div class="footer-item">
-            <div class="footer-copyright">
-                © 2026 Engebag | Tecnologia da Informação
-            </div>
-        </div>
-    </div>
-</footer>
-
-
-<!-- ================================
-     MODAL
-================================ -->
 <div id="modalSenha" class="modal-kb" style="display:none;">
     <div class="modal-box">
-
+        <span class="modal-close-x" onclick="fecharModal()">&times;</span>
         <h3>Credencial do usuário</h3>
-
-        <input type="text" id="username" placeholder="Usuário">
-        <input type="password" id="password" placeholder="Senha">
-
-        <button onclick="validarCredencial()">Acessar</button>
-        <button class="cancel" onclick="fecharModal()">Cancelar</button>
-
-        <p id="erroSenha" class="modal-erro"></p>
-
+        <div class="modal-form-container">
+            <input type="text" id="username" placeholder="Usuário">
+            <input type="password" id="password" placeholder="Senha">
+            <button id="btnAcessarModal" class="btn-acessar" onclick="validarCredencial()">Acessar</button>
+            <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+            <p id="erroSenha" class="modal-erro" style="display:none;"></p>
+        </div>
     </div>
 </div>
 
-
-<!-- ================================
-     SCRIPTS
-================================ -->
+<footer>
+    <div class="footer-container">
+        <div class="footer-item">
+            <a href="https://wa.me/551934562991" class="btn-whatsapp" target="_blank">Whatsapp Suporte</a>
+        </div>
+        <div class="footer-item">
+            <div class="footer-copyright">© 2026 Engebag | Tecnologia da Informação</div>
+        </div>
+    </div>
+</footer>
 
 <script src="{% static 'js/base_conhecimento_modal.js' %}"></script>
 <script src="{% static 'js/base_conhecimento.js' %}"></script>
 
 <script>
     let artigoIdAtual = null;
-
-    function abrirModalArtigo(id) {
-        artigoIdAtual = id;
-        document.getElementById("modalSenha").style.display = "flex";
-    }
+    let categoriaIdAtual = null;
 
     function fecharModal() {
         document.getElementById("modalSenha").style.display = "none";
-        document.getElementById("erroSenha").innerText = "";
+        const erroElem = document.getElementById("erroSenha");
+        if (erroElem) {
+            erroElem.innerText = "";
+            erroElem.style.display = "none";
+        }
         document.getElementById("username").value = "";
         document.getElementById("password").value = "";
     }

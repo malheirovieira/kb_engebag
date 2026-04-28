@@ -1,23 +1,45 @@
 from django.db import models
-from django.conf import settings 
+from django.conf import settings
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import Group
 
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=255)
+
     categoria_pai = models.ForeignKey(
-        'self', 
-        on_delete=models.CASCADE, 
-        null=True, 
-        blank=True, 
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name='subcategorias'
     )
+
+    # controle de acesso por grupo
+    grupos_permitidos = models.ManyToManyField(Group, blank=True)
 
     def __str__(self):
         if self.categoria_pai:
             return f"{self.categoria_pai.nome} > {self.nome}"
         return self.nome
+
+    # Verifica se a categoria possui restrição PRÓPRIA (Não herança)
+    def tem_restricao_direta(self):
+        return self.grupos_permitidos.exists()
+
+    # Verifica se possui restrição direta (Mantido para compatibilidade JS)
+    def tem_restricao(self):
+        return self.grupos_permitidos.exists()
+
+    # Verifica restrição HERDADA (categoria + pais)
+    @property
+    def tem_restricao_herdada(self):
+        categoria = self
+        while categoria:
+            if categoria.grupos_permitidos.exists():
+                return True
+            categoria = categoria.categoria_pai
+        return False
 
 
 class Tag(models.Model):
@@ -29,14 +51,15 @@ class Tag(models.Model):
 
 class Artigo(models.Model):
     titulo = models.CharField(max_length=255)
-    conteudo = RichTextUploadingField() 
+    conteudo = RichTextUploadingField()
+
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
     nome_autor_snapshot = models.CharField(max_length=255, blank=True, null=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
 
     autor = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
 
@@ -45,11 +68,19 @@ class Artigo(models.Model):
     imagem_capa = models.ImageField(upload_to='artigos/fotos/', null=True, blank=True)
     arquivo_pdf = models.FileField(upload_to='artigos/documentos/', null=True, blank=True)
 
-    
+    # prioridade maior que categoria
     grupos_permitidos = models.ManyToManyField(Group, blank=True)
-
-    def exige_credencial(self):
-        return self.grupos_permitidos.exists()
 
     def __str__(self):
         return self.titulo
+
+    # Verifica apenas se o ARTIGO em si tem grupo cadastrado
+    def tem_restricao_direta(self):
+        return self.grupos_permitidos.exists()
+
+    # Verifica se o artigo é restrito por ele mesmo OU pela categoria (Herança)
+    def tem_restricao(self):
+        return self.grupos_permitidos.exists() or self.categoria.tem_restricao_herdada
+
+    def exige_credencial(self):
+        return self.tem_restricao()

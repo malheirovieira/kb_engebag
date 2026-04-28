@@ -1,33 +1,35 @@
+<details class="module-group"
+         id="details-cat-{{ categoria.id }}"
+         data-restrita="{{ categoria.tem_restricao_direta|yesno:'true,false' }}">
 
-<details class="module-group" id="details-cat-{{ categoria.id }}"> 
-    <summary class="module-card d-flex justify-content-between align-items-center"> 
+    <summary class="module-card d-flex justify-content-between align-items-center"
+             onclick="validarCategoriaClick(event, {{ categoria.id }})">
+
         <span class="category-text" style="flex-grow: 1;">
             {{ categoria.nome|upper }}
         </span>
-        
-        <span class="arrow"></span> 
+
+        <span class="arrow"></span>
+
     </summary>
 
     <div class="module-list">
 
-        {# 🔁 Subcategorias recursivas (MANTIDO INTACTO) #}
         {% for sub in categoria.subcategorias.all|dictsort:"nome" %}
             {% include "artigos/lista_categorias.html" with categoria=sub %}
         {% endfor %}
 
-        {# 📄 ARTIGOS (MODAL DE CREDENCIAL) #}
         {% for art in categoria.artigo_set.all|dictsort:"titulo" %}
 
             <a href="#"
                id="link-artigo-{{ art.id }}"
-               onclick="abrirModalArtigo({{ art.id }})"
+               onclick="verificarAcessoArtigo(event, {{ art.id }}, {{ art.tem_restricao_direta|yesno:'true,false' }})"
                class="article-link">
-
                 {{ art.titulo }}
-
             </a>
 
         {% endfor %}
 
     </div>
+
 </details>

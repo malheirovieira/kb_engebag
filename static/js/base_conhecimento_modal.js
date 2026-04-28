@@ -1,5 +1,5 @@
 // ===============================
-// UTILITÁRIO CSRF (OBRIGATÓRIO)
+// UTILITÁRIO CSRF
 // ===============================
 function getCookie(name) {
     let cookieValue = null;
@@ -11,7 +11,9 @@ function getCookie(name) {
             const cookie = cookies[i].trim();
 
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length + 1)
+                );
                 break;
             }
         }
@@ -25,10 +27,24 @@ function getCookie(name) {
 // VALIDAÇÃO DE CREDENCIAL
 // ===============================
 function validarCredencial() {
+
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
+    const erroSenha = document.getElementById("erroSenha"); 
 
-    fetch(`/validar-artigo/${artigoIdAtual}/`, {
+    let url = "";
+
+    if (artigoIdAtual) {
+        url = `/validar-artigo/${artigoIdAtual}/`;
+    } else if (categoriaIdAtual) {
+        url = `/validar-categoria/${categoriaIdAtual}/`;
+    } else {
+        erroSenha.innerText = "Erro interno";
+        erroSenha.style.display = "block";
+        return;
+    }
+
+    fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -41,55 +57,57 @@ function validarCredencial() {
     })
     .then(async response => {
 
-        // 🔐 garante resposta JSON válida
-        const data = await response.json().catch(() => {
-            throw new Error("Resposta inválida do servidor");
-        });
+        const data = await response.json();
 
-        console.log("RESPOSTA BACKEND:", data);
-
-        // ✔ SUCESSO → libera artigo
         if (data.ok === true) {
-
             fecharModal();
 
-            htmx.ajax('GET', `/artigo/${artigoIdAtual}/`, {
-                target: "#conteudo-direito",
-                swap: "innerHTML"
-            });
+            if (categoriaIdAtual && typeof liberarCategoriaAposLogin === "function") {
+                liberarCategoriaAposLogin();
+            }
 
+            if (artigoIdAtual) {
+                htmx.ajax('GET', `/artigo/${artigoIdAtual}/`, {
+                    target: "#conteudo-direito",
+                    swap: "innerHTML"
+                });
+            }
             return;
         }
 
-        // ❌ ERRO (senha ou permissão)
-        document.getElementById("erroSenha").innerText =
-            data.erro || "Usuário ou senha inválidos";
+        erroSenha.innerText = data.erro || "Usuário ou senha inválidos";
+        erroSenha.style.display = "block"; 
 
     })
-    .catch(error => {
-        console.error("ERRO FETCH:", error);
-
-        document.getElementById("erroSenha").innerText =
-            "Erro de comunicação com o servidor";
-    });
-
-    // ===============================
-    // ENTER PARA SUBMIT
-    // ===============================
-    document.addEventListener("DOMContentLoaded", function () {
-
-        function handleEnter(e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                validarCredencial();
-            }
-        }
-
-        const usernameInput = document.getElementById("username");
-        const passwordInput = document.getElementById("password");
-
-        if (usernameInput) usernameInput.addEventListener("keypress", handleEnter);
-        if (passwordInput) passwordInput.addEventListener("keypress", handleEnter);
-
+    .catch((err) => {
+        console.error("ERRO:", err);
+        erroSenha.innerText = "Erro de comunicação com o servidor";
+        erroSenha.style.display = "block";
     });
 }
+
+
+// ===============================
+// ENTER NO MODAL
+// ===============================
+document.addEventListener("DOMContentLoaded", function () {
+
+    function handleEnter(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            validarCredencial();
+        }
+    }
+
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+
+    if (usernameInput) {
+        usernameInput.addEventListener("keypress", handleEnter);
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener("keypress", handleEnter);
+    }
+
+});
