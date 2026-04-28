@@ -1,38 +1,43 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{# Título da página exibido na aba do navegador #}
 {% block title %}ENGEBAG Base de Conhecimento{% endblock %}
 
+
+<!-- ================================
+     CSS
+================================ -->
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/base_conhecimento.css' %}">
 
 <style>
-/* Destaque visual do artigo selecionado no menu lateral */
-.article-link.highlight-active {
-    background-color: rgba(233, 92, 19, 0.1) !important;
-    border-left: 4px solid #E95C13 !important;
-    color: #E95C13 !important;
-    font-weight: bold !important;
-}
+    .article-link.highlight-active {
+        background-color: rgba(233, 92, 19, 0.1) !important;
+        border-left: 4px solid #E95C13 !important;
+        color: #E95C13 !important;
+        font-weight: bold !important;
+    }
 </style>
 {% endblock %}
 
+
+<!-- ================================
+     CONTEÚDO
+================================ -->
 {% block content %}
 
-{# Barra superior (faixa laranja) #}
 <div class="header"></div>
 
 <div class="container">
 
-    {# Área superior: botão voltar + busca #}
+    <!-- ================================
+         TOPO (VOLTA + BUSCA)
+    ================================= -->
     <div class="search-container">
 
         <!-- BOTÃO VOLTAR -->
-        <!-- Redireciona para a home -->
         <div class="botao-voltar">
             <a href="{% url 'home' %}">
-                <!-- Ícone Bootstrap -->
                 <svg xmlns="http://www.w3.org/2000/svg"
                      width="16"
                      height="16"
@@ -46,10 +51,7 @@
         </div>
 
         <!-- CAMPO DE BUSCA -->
-        <!-- Utiliza HTMX para buscar artigos sem recarregar a página -->
         <div class="search-wrapper">
-
-            <!-- Ícone de lupa -->
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="16"
                  height="16"
@@ -64,32 +66,25 @@
                    name="q"
                    class="search-input"
                    placeholder="Busque a sua pergunta ou palavra chave aqui"
-
-                   {# HTMX: chama a view buscar_artigos #}
                    hx-get="{% url 'buscar_artigos' %}"
-
-                   {# Dispara ao digitar (com delay de 500ms) #}
                    hx-trigger="keyup changed delay:500ms"
-
-                   {# Onde o resultado será renderizado #}
                    hx-target="#conteudo-direito"
-
-                   {# Substitui apenas o conteúdo interno #}
                    hx-swap="innerHTML"
-
-                   {# Verifica se o campo foi limpo #}
                    oninput="checkEmptySearch(this)">
         </div>
 
     </div>
 
+
+    <!-- ================================
+         LAYOUT (SIDEBAR + CONTEÚDO)
+    ================================= -->
     <div class="content">
 
-        <!-- MENU LATERAL (CATEGORIAS) -->
+        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="modules">
 
-                {# Renderiza apenas categorias raiz #}
                 {% for categoria in categorias %}
                     {% if not categoria.categoria_pai %}
                         {% include "artigos/lista_categorias.html" with categoria=categoria %}
@@ -99,10 +94,9 @@
             </div>
         </div>
 
-        <!-- ÁREA PRINCIPAL (CONTEÚDO DINÂMICO) -->
+        <!-- CONTEÚDO DIREITO -->
         <div id="conteudo-direito" class="main-article-card">
 
-            <!-- Conteúdo inicial padrão -->
             <div id="default-message">
                 <h1>Base de Conhecimento</h1>
                 <p>
@@ -116,7 +110,10 @@
     </div>
 </div>
 
-{# Template usado para restaurar a tela inicial #}
+
+<!-- ================================
+     TEMPLATE HOME
+================================ -->
 <template id="template-boas-vindas">
     <div id="default-message">
         <h1>Base de Conhecimento</h1>
@@ -126,7 +123,10 @@
     </div>
 </template>
 
-{# Rodapé #}
+
+<!-- ================================
+     FOOTER
+================================ -->
 <footer>
     <div class="footer-container">
         <div class="footer-item">
@@ -142,256 +142,48 @@
     </div>
 </footer>
 
-<div id="avaliacao-widget" class="avaliacao-widget hidden">
 
-    <div class="avaliacao-header">
-        <span>Avaliação</span>
-        <div class="avaliacao-actions">
-            <button onclick="minimizarAvaliacao()">–</button>
-            <button onclick="fecharAvaliacao()">×</button>
-        </div>
+<!-- ================================
+     MODAL
+================================ -->
+<div id="modalSenha" class="modal-kb" style="display:none;">
+    <div class="modal-box">
+
+        <h3>Credencial do usuário</h3>
+
+        <input type="text" id="username" placeholder="Usuário">
+        <input type="password" id="password" placeholder="Senha">
+
+        <button onclick="validarCredencial()">Acessar</button>
+        <button class="cancel" onclick="fecharModal()">Cancelar</button>
+
+        <p id="erroSenha" class="modal-erro"></p>
+
     </div>
+</div>
 
-        <div class="avaliacao-body">
-            <p class="avaliacao-pergunta">
-                Sendo considerado 0 Ruim e 10 Excelente, qual nota você da para este site?
-            </p>
-        
-            <div class="avaliacao-notas">
-                {% for i in "0123456789"|make_list %}
-                    <button class="nota-btn nota-{{ forloop.counter0 }}">{{ forloop.counter0 }}</button>
-                {% endfor %}
-                <button class="nota-btn nota-10">10</button>
-            </div>
-        
-            <p class="avaliacao-label">
-                Justifique sua avaliação ou deixe-nos uma sugestão de melhoria no campo abaixo!
-            </p>
-            
-            <div class="avaliacao-input-group">
-                <textarea id="avaliacao-texto" placeholder="Justifique aqui sua avaliação."></textarea>
-                
-                <button class="btn-enviar-avaliacao" onclick="enviarAvaliacao()">
-                    ➤
-                </button>
-            </div>
-        </div>
-    </div>
-        
-    </div> </div> <button id="avaliacao-toggle" class="avaliacao-toggle hidden" onclick="abrirAvaliacao()">
-        ★
-    </button>
 
-    <script>
-        /* Controle de clique para funcionamento do acordeão nas categorias */
-        document.addEventListener('click', function(e) {
-            const trigger = e.target.closest('.module-card');
-        
-            if (trigger) {
-                e.preventDefault();
-                e.stopPropagation();
-        
-                const details = trigger.closest('details');
-        
-                if (details) {
-                    if (details.hasAttribute('open')) {
-                        // --- AJUSTE SOLICITADO: LIMPAR CONTEÚDO AO FECHAR ---
-                        // Se fecharmos a categoria, o conteúdo central volta ao padrão
-                        limparConteudo();
-    
-                        // FECHAR: Remove 'open' deste e de todos os descendentes
-                        details.removeAttribute('open');
-                        details.querySelectorAll('details').forEach(child => {
-                            child.removeAttribute('open');
-                        });
-    
-                        const algumaAberta = document.querySelector('.sidebar details[open]');
-                        if (!algumaAberta) {
-                            restaurarHome();
-                        }
-        
-                    } else {
-                        // ABRIR: 
-                        const isRaiz = !details.parentElement.closest('details');
-    
-                        if (isRaiz) {
-                            document.querySelectorAll('.sidebar > .modules > details').forEach(el => {
-                                el.removeAttribute('open');
-                                el.querySelectorAll('details').forEach(sub => sub.removeAttribute('open'));
-                            });
-                            restaurarHome();
-                        } else {
-                            const parentContainer = details.parentElement;
-                            Array.from(parentContainer.children).forEach(sibling => {
-                                if (sibling.tagName.toLowerCase() === 'details' && sibling !== details) {
-                                    sibling.removeAttribute('open');
-                                    sibling.querySelectorAll('details').forEach(sub => sub.removeAttribute('open'));
-                                }
-                            });
-                        }
-    
-                        // Reset dos filhos ao abrir para não virem abertos por erro
-                        details.querySelectorAll('details').forEach(child => {
-                            child.removeAttribute('open');
-                        });
-        
-                        limparConteudo();
-                        details.setAttribute('open', 'true');
-                    }
-                }
-            }
-        });
-        
-        /* Função de expansão (usada apenas via busca ou comandos diretos) */
-        function expandirMenuLateral(artigoId) {
-            document.querySelectorAll('.article-link').forEach(el => {
-                el.classList.remove('highlight-active');
-            });
-        
-            const linkArtigo = document.getElementById('link-artigo-' + artigoId);
-            
-            if (linkArtigo) {
-                linkArtigo.classList.add('highlight-active');
-        
-                let parent = linkArtigo.closest('details');
-                while (parent) {
-                    parent.setAttribute('open', 'true');
-                    parent = parent.parentElement.closest('details');
-                }
-        
-                setTimeout(() => {
-                    linkArtigo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            }
-        }
-        
-        document.body.addEventListener('htmx:afterOnLoad', function(evt) {
-            // intencionalmente vazio
-        });
-        
-        function limparConteudo() {
-            const conteudoDireito = document.getElementById('conteudo-direito');
-            const template = document.getElementById('template-boas-vindas');
-        
-            if (conteudoDireito && template) {
-                conteudoDireito.innerHTML = template.innerHTML;
-            }
-        
-            document.querySelectorAll('.article-link').forEach(el => {
-                el.classList.remove('highlight-active');
-            });
-        }
-        
-        function restaurarHome() {
-            limparConteudo();
-            document.querySelectorAll('.sidebar details').forEach(detail => {
-                detail.removeAttribute('open');
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        document.body.addEventListener('htmx:beforeRequest', function(evt) {
-            const campoBusca = document.getElementById('campo-busca');
-            if (evt.detail.elt === campoBusca && campoBusca.value.trim() === "") {
-                evt.preventDefault();
-                restaurarHome();
-            }
-        });
-        
-        function checkEmptySearch(input) {
-            if (input.value.trim() === "") {
-                restaurarHome();
-            }
-        }
-    
-        /* ============================================================
-            WIDGET DE AVALIAÇÃO 
-        ============================================================ */
-    
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.sidebar details').forEach(detail => {
-                detail.removeAttribute('open');
-            });
-    
-            setTimeout(() => {
-                const widget = document.getElementById('avaliacao-widget');
-                if (widget) {
-                    widget.classList.remove('hidden');
-                    setTimeout(() => {
-                        widget.classList.add('show');
-                    }, 50);
-                }
-            }, 5000);
-    
-            window.notaSelecionada = null;
-            const botoes = document.querySelectorAll('.nota-btn');
-            botoes.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelectorAll('.nota-btn').forEach(b => b.classList.remove('selected'));
-                    this.classList.add('selected');
-                    window.notaSelecionada = this.innerText;
-                });
-            });
-        });
-    
-        function abrirAvaliacao() {
-            const widget = document.getElementById('avaliacao-widget');
-            const botao = document.getElementById('avaliacao-toggle');
-            if (botao) {
-                botao.classList.add('hidden');
-                botao.style.display = 'none';
-            }
-            if (widget) {
-                widget.classList.remove('hidden');
-                setTimeout(() => {
-                    widget.classList.add('show');
-                }, 10);
-            }
-        }
-    
-        function minimizarAvaliacao() {
-            const widget = document.getElementById('avaliacao-widget');
-            const botao = document.getElementById('avaliacao-toggle');
-            if (widget) {
-                widget.classList.remove('show');
-                setTimeout(() => {
-                    widget.classList.add('hidden');
-                    if (botao) {
-                        botao.classList.remove('hidden');
-                        botao.style.setProperty('display', 'flex', 'important'); 
-                    }
-                }, 400);
-            }
-        }
-    
-        function fecharAvaliacao() {
-            const widget = document.getElementById('avaliacao-widget');
-            const botao = document.getElementById('avaliacao-toggle');
-            if (widget) {
-                widget.classList.remove('show');
-                setTimeout(() => {
-                    widget.classList.add('hidden');
-                    if (botao) {
-                        botao.classList.add('hidden');
-                        botao.style.setProperty('display', 'none', 'important');
-                    }
-                }, 400);
-            }
-        }
-    
-        function enviarAvaliacao() {
-            const body = document.querySelector('.avaliacao-body');
-            if (!window.notaSelecionada) return;
-            body.innerHTML = `
-                <div style="text-align:center; padding:20px;">
-                    <p style="font-size:13px; color:#333;">
-                        Obrigado pela sua avaliação,<br>
-                        estaremos melhorando a ferramenta sempre que necessário.
-                    </p>
-                </div>
-            `;
-            setTimeout(() => { fecharAvaliacao(); }, 5000);
-        }
-    </script>
+<!-- ================================
+     SCRIPTS
+================================ -->
+
+<script src="{% static 'js/base_conhecimento_modal.js' %}"></script>
+<script src="{% static 'js/base_conhecimento.js' %}"></script>
+
+<script>
+    let artigoIdAtual = null;
+
+    function abrirModalArtigo(id) {
+        artigoIdAtual = id;
+        document.getElementById("modalSenha").style.display = "flex";
+    }
+
+    function fecharModal() {
+        document.getElementById("modalSenha").style.display = "none";
+        document.getElementById("erroSenha").innerText = "";
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+    }
+</script>
 
 {% endblock %}

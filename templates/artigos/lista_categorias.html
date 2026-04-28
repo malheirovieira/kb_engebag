@@ -1,3 +1,4 @@
+
 <details class="module-group" id="details-cat-{{ categoria.id }}"> 
     <summary class="module-card d-flex justify-content-between align-items-center"> 
         <span class="category-text" style="flex-grow: 1;">
@@ -8,19 +9,25 @@
     </summary>
 
     <div class="module-list">
+
+        {# 🔁 Subcategorias recursivas (MANTIDO INTACTO) #}
         {% for sub in categoria.subcategorias.all|dictsort:"nome" %}
             {% include "artigos/lista_categorias.html" with categoria=sub %}
         {% endfor %}
 
+        {# 📄 ARTIGOS (MODAL DE CREDENCIAL) #}
         {% for art in categoria.artigo_set.all|dictsort:"titulo" %}
-             <a href="#" 
-                id="link-artigo-{{ art.id }}"
-                hx-get="{% url 'detalhe_artigo' art.id %}" 
-                hx-target="#conteudo-direito"
-                hx-swap="innerHTML"
-                class="article-link {% if artigo and artigo.id == art.id %}active-link{% endif %}">
+
+            <a href="#"
+               id="link-artigo-{{ art.id }}"
+               onclick="abrirModalArtigo({{ art.id }})"
+               class="article-link">
+
                 {{ art.titulo }}
-             </a>
+
+            </a>
+
         {% endfor %}
+
     </div>
 </details>
