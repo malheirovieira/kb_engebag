@@ -3,7 +3,6 @@ from django.conf import settings
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import Group
 
-
 class Categoria(models.Model):
     nome = models.CharField(max_length=255)
 
@@ -73,6 +72,15 @@ class Artigo(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    # MÉTODO NOVO: Puxa toda a árvore de categorias (Avô > Pai)
+    def obter_caminho(self):
+        caminho = []
+        cat = self.categoria
+        while cat:
+            caminho.insert(0, cat)
+            cat = cat.categoria_pai
+        return caminho
 
     # Verifica apenas se o ARTIGO em si tem grupo cadastrado
     def tem_restricao_direta(self):

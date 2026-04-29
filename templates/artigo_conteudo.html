@@ -3,14 +3,12 @@
     <nav class="breadcrumb-nav">
         <span class="breadcrumb-label">Diretório:</span>
 
-        {% for nivel in caminho %}
+        {# Alterado para chamar a função que percorre a árvore completa #}
+        {% for nivel in artigo.obter_caminho %}
             <span class="breadcrumb-step">{{ nivel.nome }}</span>
-            {% if not forloop.last %}
-                <span class="separator"> / </span>
-            {% endif %}
+            <span class="separator"> / </span>
         {% endfor %}
 
-        <span class="separator"> / </span>
         <span class="current-article">{{ artigo.titulo }}</span>
     </nav>
 

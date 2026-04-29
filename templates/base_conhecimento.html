@@ -21,7 +21,6 @@
 <div class="header"></div>
 
 <div class="container">
-
     <div class="search-container">
         <div class="botao-voltar">
             <a href="{% url 'home' %}">
@@ -63,10 +62,14 @@
             </div>
 
             <div id="conteudo-direito" class="main-article-card">
-                <div id="default-message">
-                    <h1>Base de Conhecimento</h1>
-                    <p>Bem-vindo à Central de Conhecimento da empresa. Utilize a barra de pesquisa ou navegue pelo menu lateral.</p>
-                </div>
+                {% if artigo_direto %}
+                    {% include "artigo_conteudo.html" with artigo=artigo_direto %}
+                {% else %}
+                    <div id="default-message">
+                        <h1>Base de Conhecimento</h1>
+                        <p>Bem-vindo à Central de Conhecimento da empresa. Utilize a barra de pesquisa ou navegue pelo menu lateral.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -121,6 +124,13 @@
         document.getElementById("username").value = "";
         document.getElementById("password").value = "";
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        {% if abrir_modal_auto %}
+            artigoIdAtual = {{ artigo_id_pendente }};
+            document.getElementById("modalSenha").style.display = "flex";
+        {% endif %}
+    });
 </script>
 
 {% endblock %}

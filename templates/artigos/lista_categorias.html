@@ -13,6 +13,12 @@
 
     </summary>
 
+    <div class="tags-container">
+    {% for tag in artigo.tags.all %}
+        <span class="badge-tag">{{ tag.nome }}</span>
+    {% endfor %}
+    </div>
+
     <div class="module-list">
 
         {% for sub in categoria.subcategorias.all|dictsort:"nome" %}
@@ -21,8 +27,11 @@
 
         {% for art in categoria.artigo_set.all|dictsort:"titulo" %}
 
-            <a href="#"
+            <a href="{% url 'detalhe_artigo' art.id %}"
                id="link-artigo-{{ art.id }}"
+               hx-get="{% url 'detalhe_artigo' art.id %}"
+               hx-target="#conteudo-direito"
+               hx-push-url="true"
                onclick="verificarAcessoArtigo(event, {{ art.id }}, {{ art.tem_restricao_direta|yesno:'true,false' }})"
                class="article-link">
                 {{ art.titulo }}
