@@ -44,7 +44,7 @@ Este projeto conta com a colaboração das seguintes pessoas:
 git clone https://github.com/malheirovieira/kb_engebag.git
 cd kb_engebag
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
