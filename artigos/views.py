@@ -69,7 +69,7 @@ def base_conhecimento(request):
         'artigos': Artigo.objects.all().order_by('titulo')
     })
 
-@never_cache  # Garante que o navegador não cacheie a página validada
+@never_cache
 def detalhe_artigo(request, artigo_id):
     artigo = get_object_or_404(Artigo, id=artigo_id)
     
@@ -102,20 +102,51 @@ def detalhe_artigo(request, artigo_id):
 
 def validar_credencial_artigo(request, artigo_id):
     if request.method != "POST": return JsonResponse({"ok": False})
-    user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
-    if not user: return JsonResponse({"ok": False, "erro": "Usuário ou senha inválidos"})
     
-    # Define que a sessão expira ao fechar o navegador
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+    user = authenticate(username=username, password=password)
+    
+    if not user: 
+        return JsonResponse({"ok": False, "erro": "Usuário ou senha inválidos"})
+    
+    # NOVA LOGICA: Validar se o usuário autenticado pertence ao grupo do artigo/categoria
+    artigo = get_object_or_404(Artigo, id=artigo_id)
+    grupos_permitidos_ids = obter_todos_grupos_da_linhagem(artigo.categoria)
+    if artigo.grupos_permitidos.exists():
+        grupos_permitidos_ids.update(artigo.grupos_permitidos.values_list('id', flat=True))
+    
+    user_groups_ids = set(user.groups.values_list('id', flat=True))
+    
+    # Se houver restrição e o usuário não for admin e não estiver no grupo
+    if grupos_permitidos_ids and not user.is_superuser:
+        if not (user_groups_ids & grupos_permitidos_ids):
+            return JsonResponse({"ok": False, "erro": "Seu usuário não tem permissão para este grupo."})
+
     request.session.set_expiry(0) 
     request.session[f"artigo_{artigo_id}"] = True
     return JsonResponse({"ok": True})
 
 def validar_credencial_categoria(request, categoria_id):
     if request.method != "POST": return JsonResponse({"ok": False})
-    user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
-    if not user: return JsonResponse({"ok": False, "erro": "Usuário ou senha inválidos"})
     
-    # Define que a sessão expira ao fechar o navegador
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+    user = authenticate(username=username, password=password)
+    
+    if not user: 
+        return JsonResponse({"ok": False, "erro": "Usuário ou senha inválidos"})
+    
+    # NOVA LOGICA: Validar se o usuário pertence ao grupo da categoria ou da sua linhagem
+    categoria = get_object_or_404(Categoria, id=categoria_id)
+    grupos_permitidos_ids = obter_todos_grupos_da_linhagem(categoria)
+    
+    user_groups_ids = set(user.groups.values_list('id', flat=True))
+    
+    if grupos_permitidos_ids and not user.is_superuser:
+        if not (user_groups_ids & grupos_permitidos_ids):
+            return JsonResponse({"ok": False, "erro": "Seu usuário não tem permissão para esta categoria."})
+
     request.session.set_expiry(0)
     request.session[f"categoria_{categoria_id}"] = True
     return JsonResponse({"ok": True})

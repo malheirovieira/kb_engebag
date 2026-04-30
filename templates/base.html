@@ -24,7 +24,12 @@
 
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+
+<!-- 
+    O atributo hx-headers adicionado abaixo garante que o token CSRF do Django 
+    seja enviado automaticamente em todas as requisições disparadas pelo HTMX.
+-->
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
     {% block content %}
     {% endblock %}
