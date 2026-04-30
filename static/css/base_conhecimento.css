@@ -5,7 +5,7 @@
     position: relative;
     width: 100%;
     height: 9vh;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
     background-color: #E95C13;
 }
 
@@ -75,7 +75,7 @@
 .article-link {
     padding: 10px 15px 10px 16px;
     font-size: 11px;
-    color: #666; /* Texto do link um pouco mais escuro para clareza */
+    color: #666;
     text-decoration: none;
     border-top: 1px solid #f1f1f1;
     display: block;
@@ -99,8 +99,8 @@
     background: #fff;
     padding: 25px;
     border: 1px solid #dee2e6;
-    min-height: 450px;
-    border-radius: 6px;
+    min-height: 550px;
+    border-radius: 4px;
 }
 
 /* --- SIDEBAR --- */
@@ -113,7 +113,7 @@
 
 .sidebar .modules {
     border: 1px solid #dee2e6;
-    border-radius: 8px;
+    border-radius: 4px; /* Alterado de 8px para 4px */
     overflow: hidden;
     background: #fff;
 }
@@ -130,19 +130,19 @@
 
 /* --- LÓGICA DE OPACIDADE (IRMÃOS E NÍVEIS) --- */
 
-/* 1. SELETOR CHAVE: Se uma lista tem um grupo aberto, apaga todos os irmãos que não estão abertos */
+/* 1. Se uma lista tem um grupo aberto, apaga todos os irmãos que não estão abertos */
 .module-list:has(> .module-group[open]) > .module-group:not([open]) > .module-card {
     opacity: 0.35 !important;
     filter: grayscale(100%);
 }
 
-/* 2. Também apaga os grupos principais (Procedimentos, Rede, etc) se um deles estiver aberto */
+/* 2. Também apaga os grupos principais se um deles estiver aberto */
 .modules:has(> .module-group[open]) > .module-group:not([open]) > .module-card {
     opacity: 0.35 !important;
     filter: grayscale(100%);
 }
 
-/* 3. Garante nitidez 100% para o que estiver DENTRO do grupo aberto (Filhos e links) */
+/* 3. Garante nitidez para o que estiver DENTRO do grupo aberto */
 .module-group[open] .module-card,
 .module-group[open] .article-link {
     opacity: 1 !important;
@@ -154,7 +154,7 @@
 .module-group[open] {
     border: 2px solid #E95C13 !important;
     background: #fff8f5;
-    border-radius: 0px;
+    border-radius: 4px; /* Alterado de 0px para 4px */
 }
 
 /* 5. Título do nível atual expandido fica Laranja */
@@ -174,12 +174,22 @@
     padding: 14px 16px;
     background: #fff;
     transition: all 0.2s ease;
+    border-radius: 4px;
 }
 
 /* Tamanhos por nível */
-.sidebar > .modules > .module-group > .module-card { font-size: 17px; text-transform: uppercase; }
-.module-list > .module-group > .module-card { font-size: 13px; }
-.module-list .module-list > .module-group > .module-card { font-size: 12px; }
+.sidebar > .modules > .module-group > .module-card {
+    font-size: 17px;
+    text-transform: uppercase;
+}
+
+.module-list > .module-group > .module-card {
+    font-size: 13px;
+}
+
+.module-list .module-list > .module-group > .module-card {
+    font-size: 12px;
+}
 
 .module-card:hover {
     color: #E95C13 !important;
@@ -187,9 +197,22 @@
 }
 
 /* --- ACORDEÃO --- */
-.module-list { display: flex; flex-direction: column; margin: 0; padding-left: 0; }
-.module-group > .module-list { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
-.module-group[open] > .module-list { max-height: 2000px; }
+.module-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding-left: 0;
+}
+
+.module-group > .module-list {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+}
+
+.module-group[open] > .module-list {
+    max-height: 2000px;
+}
 
 /* BREADCRUMB */
 .breadcrumb-nav {
@@ -207,9 +230,21 @@
 }
 
 /* --- SETA --- */
-.arrow { display: inline-block; transition: transform 0.25s ease; color: #b0b0b0; font-size: 10px; }
-.arrow::before { content: '▶'; }
-.module-group[open] > .module-card .arrow { transform: rotate(90deg); color: #E95C13; }
+.arrow {
+    display: inline-block;
+    transition: transform 0.25s ease;
+    color: #b0b0b0;
+    font-size: 10px;
+}
+
+.arrow::before {
+    content: '▶';
+}
+
+.module-group[open] > .module-card .arrow {
+    transform: rotate(90deg);
+    color: #E95C13;
+}
 
 /* --- LINKS DE ARTIGOS --- */
 .article-link {
@@ -246,8 +281,8 @@
     background: #fff;
     width: 320px;
     padding: 30px 25px 25px 25px;
-    border-radius: 8px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    border-radius: 4px; /* Alterado de 8px para 4px */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
     text-align: center;
     position: relative;
 }
@@ -270,7 +305,7 @@
     align-items: center;
 }
 
-.modal-box input, 
+.modal-box input,
 .modal-box button {
     width: 100%;
     max-width: 280px;

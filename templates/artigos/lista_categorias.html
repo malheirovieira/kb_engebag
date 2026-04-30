@@ -1,44 +1,29 @@
+{% load static %}
+
 <details class="module-group"
          id="details-cat-{{ categoria.id }}"
          data-restrita="{{ categoria.tem_restricao_direta|yesno:'true,false' }}">
 
     <summary class="module-card d-flex justify-content-between align-items-center"
              onclick="validarCategoriaClick(event, {{ categoria.id }})">
-
         <span class="category-text" style="flex-grow: 1;">
             {{ categoria.nome|upper }}
         </span>
-
         <span class="arrow"></span>
-
     </summary>
 
-    <div class="tags-container">
-    {% for tag in artigo.tags.all %}
-        <span class="badge-tag">{{ tag.nome }}</span>
-    {% endfor %}
-    </div>
-
     <div class="module-list">
-
         {% for sub in categoria.subcategorias.all|dictsort:"nome" %}
             {% include "artigos/lista_categorias.html" with categoria=sub %}
         {% endfor %}
 
         {% for art in categoria.artigo_set.all|dictsort:"titulo" %}
-
-            <a href="{% url 'detalhe_artigo' art.id %}"
+            <a href="javascript:void(0);"
                id="link-artigo-{{ art.id }}"
-               hx-get="{% url 'detalhe_artigo' art.id %}"
-               hx-target="#conteudo-direito"
-               hx-push-url="true"
                onclick="verificarAcessoArtigo(event, {{ art.id }}, {{ art.tem_restricao_direta|yesno:'true,false' }})"
                class="article-link">
                 {{ art.titulo }}
             </a>
-
         {% endfor %}
-
     </div>
-
 </details>

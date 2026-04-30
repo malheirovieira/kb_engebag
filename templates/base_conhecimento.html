@@ -107,30 +107,15 @@
     </div>
 </footer>
 
-<script src="{% static 'js/base_conhecimento_modal.js' %}"></script>
 <script src="{% static 'js/base_conhecimento.js' %}"></script>
+<script src="{% static 'js/base_conhecimento_modal.js' %}"></script>
 
 <script>
-    let artigoIdAtual = null;
-    let categoriaIdAtual = null;
-
-    function fecharModal() {
-        document.getElementById("modalSenha").style.display = "none";
-        const erroElem = document.getElementById("erroSenha");
-        if (erroElem) {
-            erroElem.innerText = "";
-            erroElem.style.display = "none";
-        }
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
         {% if abrir_modal_auto %}
-            artigoIdAtual = {{ artigo_id_pendente }};
+            window.artigoIdAtual = {{ artigo_id_pendente }};
             document.getElementById("modalSenha").style.display = "flex";
         {% endif %}
     });
 </script>
-
 {% endblock %}
