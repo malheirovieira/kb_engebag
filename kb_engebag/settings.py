@@ -96,3 +96,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
+
+# CONFIGURAÇÕES DE SESSÃO ESTILO "ANÔNIMO"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Expira ao fechar o navegador
+SESSION_COOKIE_HTTPONLY = True          # Protege contra acesso via JS
+SESSION_COOKIE_AGE = 14400              # 4 horas de duração máxima se ficar aberto

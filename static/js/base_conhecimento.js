@@ -113,3 +113,12 @@ function verificarAcessoArtigo(event, artigoId, temRestricao) {
 function checkEmptySearch(input) {
     if (input.value.trim() === "") restaurarHome();
 }
+
+function checkEmptySearch(input) {
+    if (input.value.trim() === "") {
+        restaurarHome();
+        // Garante que o container de resultados seja limpo imediatamente
+        const searchResults = document.querySelector('.search-results');
+        if (searchResults) searchResults.innerHTML = '';
+    }
+}

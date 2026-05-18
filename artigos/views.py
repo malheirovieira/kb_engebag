@@ -3,7 +3,6 @@ from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate
 from .models import Artigo, Categoria, Tag
 from django.db.models import Q
-from django.views.decorators.cache import never_cache
 
 # ======================================================
 # 1. FUNÇÃO DE RASTREIO
@@ -18,14 +17,14 @@ def obter_todos_grupos_da_linhagem(categoria):
     return grupos
 
 # ======================================================
-# 2. O FILTRO DO INPUT DE BUSCA
+# 2. O FILTRO DO INPUT DE BUSCA (VERSÃO RÍGIDA)
 # ======================================================
-@never_cache
 def buscar_artigos(request):
     query = request.GET.get('q', '').strip()
     if not query:
         return render(request, 'resultado_busca.html', {'resultados': [], 'query': query})
 
+    # Busca bruta no banco de dados
     artigos_encontrados = Artigo.objects.filter(
         Q(titulo__icontains=query) | 
         Q(categoria__nome__icontains=query) |
@@ -33,17 +32,31 @@ def buscar_artigos(request):
     ).distinct()
 
     resultados_filtrados = []
-    user = request.user
-    user_group_ids = set(user.groups.values_list('id', flat=True)) if user.is_authenticated else set()
-
+    
     for artigo in artigos_encontrados:
+        # Identifica se o artigo ou a linhagem dele possui restrições de grupo
         grupos_obrigatorios = obter_todos_grupos_da_linhagem(artigo.categoria)
         if artigo.grupos_permitidos.exists():
             grupos_obrigatorios.update(artigo.grupos_permitidos.values_list('id', flat=True))
 
+        # Se existir restrição, verificamos APENAS a sessão (ignora se é Admin/User logado)
         if grupos_obrigatorios:
-            if not (user_group_ids & grupos_obrigatorios) and not user.is_superuser:
+            # 1. Verifica se o artigo foi validado individualmente nesta sessão
+            validado = request.session.get(f"artigo_{artigo.id}")
+            
+            # 2. Se não, verifica se algum pai (categoria) foi validado nesta sessão
+            if not validado:
+                curr_cat = artigo.categoria
+                while curr_cat:
+                    if request.session.get(f"categoria_{curr_cat.id}"):
+                        validado = True
+                        break
+                    curr_cat = curr_cat.categoria_pai
+
+            # Se após checar tudo não houver chave de sessão, removemos do resultado
+            if not validado:
                 continue 
+
         resultados_filtrados.append(artigo)
 
     return render(request, 'resultado_busca.html', {'resultados': resultados_filtrados, 'query': query})
@@ -60,22 +73,17 @@ def base_conhecimento(request):
         'artigos': Artigo.objects.all().order_by('titulo')
     })
 
-@never_cache
 def detalhe_artigo(request, artigo_id):
     artigo = get_object_or_404(Artigo, id=artigo_id)
     
-    # Verifica grupos necessários para o artigo (dele + pais)
     grupos_ids = obter_todos_grupos_da_linhagem(artigo.categoria)
     if artigo.grupos_permitidos.exists():
         grupos_ids.update(artigo.grupos_permitidos.values_list('id', flat=True))
 
-    # LÓGICA DE HERANÇA DE SESSÃO:
-    # Se o artigo exige grupo, verificamos se ele OU qualquer categoria pai foi validada
-    if grupos_ids and not request.user.is_superuser:
-        # 1. Verifica se o artigo em si foi validado
+    # Lógica de acesso ao abrir o artigo diretamente
+    if grupos_ids:
         validado = request.session.get(f"artigo_{artigo_id}")
         
-        # 2. Se não, percorre a linhagem de categorias para ver se o pai foi validado
         if not validado:
             curr_cat = artigo.categoria
             while curr_cat:
@@ -123,7 +131,7 @@ def validar_credencial_artigo(request, artigo_id):
         if not (user_groups_ids & grupos_permitidos_ids):
             return JsonResponse({"ok": False, "erro": "Seu usuário não tem permissão para este grupo."})
 
-    request.session.set_expiry(0) 
+    # Cookies/Sessões agora respeitam o tempo de vida configurado globalmente no Django
     request.session[f"artigo_{artigo_id}"] = True
     return JsonResponse({"ok": True})
 
@@ -144,6 +152,6 @@ def validar_credencial_categoria(request, categoria_id):
         if not (user_groups_ids & grupos_permitidos_ids):
             return JsonResponse({"ok": False, "erro": "Seu usuário não tem permissão para esta categoria."})
 
-    request.session.set_expiry(0)
+    # Cookies/Sessões agora respeitam o tempo de vida configurado globalmente no Django
     request.session[f"categoria_{categoria_id}"] = True
     return JsonResponse({"ok": True})
