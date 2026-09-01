@@ -40,4 +40,4 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py runserver
+python manage.py runserver (caso esteja em rede corporativa e queira rodar na rede inteira, acrescente no final do comando: 0.0.0.0:8000)
